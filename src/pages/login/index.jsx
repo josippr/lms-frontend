@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Input, Button } from "@heroui/react";
 import { loginUser } from "../../service/apiService";
 import { useNavigate } from "react-router-dom";
+import { setIsLoggedIn } from "../../redux/actions/general";
 
 function Login() {
 
@@ -10,12 +12,14 @@ function Login() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
 
   const handleLogin = () => {
     loginUser(username, password)
       .then((response) => {
         localStorage.setItem("token", response.token);
+        dispatch(setIsLoggedIn(true));
         navigate("/");
       })
   }
