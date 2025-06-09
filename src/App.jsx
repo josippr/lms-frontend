@@ -1,9 +1,27 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HeroUIProvider } from "@heroui/react";
+
+import Home from "./pages/home";
+import Login from "./pages/login";
 
 function App() {
+
+  const PrivateRoute = ({ element }) => {
+    const token = localStorage.getItem('token');
+    return token ? element : <Navigate to="/login" />;
+  };
+
   return (
-    <main>
-      Hello world!
-    </main>
+    <Router>
+      <HeroUIProvider>
+        <main>
+          <Routes>
+            <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
+            <Route path="/login" element={<Login key="login" />} /> 
+          </Routes>
+        </main>
+      </HeroUIProvider>
+    </Router>
   )
 }
 
