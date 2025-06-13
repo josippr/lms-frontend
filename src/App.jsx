@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HeroUIProvider } from "@heroui/react";
+import { ThemeProvider } from './context/themeProvider.jsx';
 
 import Home from "./pages/home";
 import Login from "./pages/login";
@@ -13,14 +14,16 @@ function App() {
 
   return (
     <Router>
-      <HeroUIProvider>
-        <main>
-          <Routes>
-            <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
-            <Route path="/login" element={<Login key="login" />} /> 
-          </Routes>
-        </main>
-      </HeroUIProvider>
+      <ThemeProvider>
+        <HeroUIProvider>
+          <main>
+            <Routes>
+              <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
+              <Route path="/login" element={<Login key="login" />} /> 
+            </Routes>
+          </main>
+        </HeroUIProvider>
+      </ThemeProvider>
     </Router>
   )
 }
