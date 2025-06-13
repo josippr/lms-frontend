@@ -25,9 +25,9 @@ function Login() {
   }
 
   return (
-    <div className="lg:w-[1200px] sm:w-full px-4 pt-48 mx-auto flex flex-col items-center justify-center">
+    <div className="lg:w-full sm:w-full h-full px-4 pt-48 m-auto flex flex-col items-center justify-center gap-12">
       <h2>Login</h2>
-      <div className="w-auto max-w-[400px] flex flex-col items-center p-4 justify-center gap-8">
+      <div className="w-auto h-full flex flex-col items-center p-4 justify-center gap-8">
         <Input
           type="text"
           label="Username"
