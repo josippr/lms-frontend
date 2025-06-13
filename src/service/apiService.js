@@ -10,7 +10,7 @@ export const loginUser = async (emailOrUsername, password) => {
       body: JSON.stringify({ emailOrUsername, password }), 
     }); 
     if (!response.ok) {
-      throw new Error('Failed to login user'); 
+      throw new Error('Failed to login. Please check your credentials and try again.'); 
     }
     return await response.json(); 
   } catch (error) {
