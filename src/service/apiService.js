@@ -18,3 +18,45 @@ export const loginUser = async (emailOrUsername, password) => {
     throw error;
   }
 };
+
+// fetch profile information
+export const fetchProfile = async (token) => {
+  console.log("debug token: ", token);
+  try {
+    const response = await fetch(`${API_URL}/api/profile`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch profile. Please try again.'); 
+    }
+    return await response.json(); 
+  } catch (error) {
+    console.error('Error in fetchProfile:', error);
+    throw error;
+  }
+};
+
+// update profile information
+export const updateProfile = async (token, profileData) => {
+  try {
+    const response = await fetch(`${API_URL}/api/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(profileData),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update profile. Please try again.'); 
+    }
+    return await response.json(); 
+  } catch (error) {
+    console.error('Error in updateProfile:', error);
+    throw error;
+  }
+};
