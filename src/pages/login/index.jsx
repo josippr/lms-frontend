@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Input, Button } from "@heroui/react";
-import { loginUser } from "../../service/apiService";
+import { loginUser, fetchProfile } from "../../service/apiService";
 import { useNavigate } from "react-router-dom";
 import { setIsLoggedIn } from "../../redux/actions/general";
 
@@ -27,6 +27,16 @@ function Login() {
 
       localStorage.setItem("token", response.token);
       dispatch(setIsLoggedIn(true));
+
+      // after successful login, fetch user profile
+      const profileResponse = await fetchProfile(response.token);
+      if (!profileResponse) {
+        throw new Error("Failed to fetch user profile.");
+      }
+      //TODO store profile information in redux profile
+      // log response to console for debugging
+      console.log("User Profile:", profileResponse);
+
       navigate("/");
     } catch (err) {
       // Fallback message
