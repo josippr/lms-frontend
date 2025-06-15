@@ -4,6 +4,7 @@ import { Input, Button } from "@heroui/react";
 import { loginUser, fetchProfile } from "../../service/apiService";
 import { useNavigate } from "react-router-dom";
 import { setIsLoggedIn } from "../../redux/actions/general";
+import { setProfile } from "../../redux/actions/profile";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -33,9 +34,16 @@ function Login() {
       if (!profileResponse) {
         throw new Error("Failed to fetch user profile.");
       }
-      //TODO store profile information in redux profile
-      // log response to console for debugging
-      console.log("User Profile:", profileResponse);
+      // dispatch to profile reducer
+      dispatch(setProfile({
+        username,
+        email: response.email ?? "",
+        language: profileResponse.language,
+        theme: profileResponse.darkMode ? "dark" : "light",
+        notificationPreferences: profileResponse.notificationPreferences,
+        licenseExpirationDate: profileResponse.license?.expiryDate || null,
+        linkedDevices: profileResponse.linkedNodes || [],
+      }));
 
       navigate("/");
     } catch (err) {

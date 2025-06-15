@@ -21,7 +21,6 @@ export const loginUser = async (emailOrUsername, password) => {
 
 // fetch profile information
 export const fetchProfile = async (token) => {
-  console.log("debug token: ", token);
   try {
     const response = await fetch(`${API_URL}/api/profile`, {
       method: 'GET',
