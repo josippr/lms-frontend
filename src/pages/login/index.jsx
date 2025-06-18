@@ -40,6 +40,7 @@ function Login() {
         email: response.email ?? "",
         language: profileResponse.language,
         theme: profileResponse.darkMode ? "dark" : "light",
+        routes: profileResponse.routes || [],
         notificationPreferences: profileResponse.notificationPreferences,
         licenseExpirationDate: profileResponse.license?.expiryDate || null,
         linkedDevices: profileResponse.linkedNodes || [],

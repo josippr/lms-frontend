@@ -16,6 +16,7 @@ const initialState = {
   email: '',
   language: 'en',
   theme: 'light',
+  routes: [],
   notificationPreferences: {
     email: true,
     sms: false,
