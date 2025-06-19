@@ -6,14 +6,13 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import Header from "./components/header";
+import Sidebar from "./components/sidebar";
 
 import Home from "./pages/home";
 import Login from "./pages/login";
 
 function App() {
-
   const dispatch = useDispatch();
-
   const profileLoaded = useSelector((state) => state.profile.profileLoaded);
 
   useEffect(() => {
@@ -28,7 +27,7 @@ function App() {
           console.error("Failed to fetch profile:", error);
         });
     }
-  }, []);
+  }, [dispatch, profileLoaded]);
 
   const PrivateRoute = ({ element }) => {
     const token = localStorage.getItem('token');
@@ -39,17 +38,24 @@ function App() {
     <Router>
       <ThemeProvider>
         <HeroUIProvider>
-          <Header />
-          <main>
-            <Routes>
-              <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
-              <Route path="/login" element={<Login key="login" />} /> 
-            </Routes>
-          </main>
+          <div className="flex h-screen w-screen overflow-hidden">
+            <div className="w-[250px] h-full shrink-0 border-r border-gray-200 bg-white">
+              <Sidebar />
+            </div>
+            <div className="flex-1 relative overflow-auto bg-gray-50">
+              <Routes>
+                <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
+                <Route path="/login" element={<Login key="login" />} />
+              </Routes>
+            </div>
+            <div className="fixed top-0 right-0 z-50 p-4">
+              <Header />
+            </div>
+          </div>
         </HeroUIProvider>
       </ThemeProvider>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
