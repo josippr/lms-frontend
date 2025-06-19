@@ -8,7 +8,8 @@ import {
   SET_LICENSE_EXPIRATION,
   SET_LINKED_DEVICES,
   SET_PROFILE_STATUS,
-  SET_PROFILE_ERROR
+  SET_PROFILE_ERROR,
+  SET_PROFILE_LOADED,
 } from "../actions/types";
 
 export const setProfile = (profileData) => ({
@@ -59,4 +60,9 @@ export const setProfileStatus = (status) => ({
 export const setProfileError = (error) => ({
   type: SET_PROFILE_ERROR,
   payload: error,
+});
+
+export const setProfileLoaded = (loaded) => ({
+  type: SET_PROFILE_LOADED,
+  payload: loaded,
 });

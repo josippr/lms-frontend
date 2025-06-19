@@ -9,9 +9,11 @@ import {
   SET_LINKED_DEVICES,
   SET_PROFILE_STATUS,
   SET_PROFILE_ERROR,
+  SET_PROFILE_LOADED,
 } from "../actions/types";
 
 const initialState = {
+  loaded: false,
   username: '',
   email: '',
   language: 'en',
@@ -68,6 +70,9 @@ export default function profileReducer(state = initialState, action) {
 
     case SET_PROFILE_ERROR:
       return { ...state, error: action.payload };
+    
+    case SET_PROFILE_LOADED:
+      return { ...state, loaded: action.payload };
 
     default:
       return state;
