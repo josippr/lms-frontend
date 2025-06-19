@@ -28,7 +28,7 @@ function App() {
           console.error("Failed to fetch profile:", error);
         });
     }
-  }, [dispatch, profileLoaded]);
+  }, []);
 
   const PrivateRoute = ({ element }) => {
     const token = localStorage.getItem('token');
