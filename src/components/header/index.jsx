@@ -10,7 +10,7 @@ import GlobeIcon from "../../assets/icons/globe";
 function Header() {
 
   return (
-    <header className="bg-transparent border-1 border-red-400 w-min h-16 flex items-center justify-end gap-4 absolute top-0 right-0">
+    <header className="bg-transparent w-min h-16 flex items-center justify-end gap-4 absolute top-0 right-0">
       <Button isIconOnly aria-label="Like" variant="bordered">
         <SearchIcon className="text-zinc-300" />
       </Button>
