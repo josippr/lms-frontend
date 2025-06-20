@@ -12,6 +12,7 @@ import Home from "./pages/home";
 import Login from "./pages/login";
 
 function App() {
+
   const dispatch = useDispatch();
   const profileLoaded = useSelector((state) => state.profile.profileLoaded);
 
@@ -38,20 +39,34 @@ function App() {
     <Router>
       <ThemeProvider>
         <HeroUIProvider>
-          <div className="flex h-screen w-screen overflow-hidden">
-            <div className="w-[250px] h-full shrink-0 border-r border-gray-200 bg-white">
-              <Sidebar />
-            </div>
-            <div className="flex-1 relative overflow-auto bg-gray-50">
-              <Routes>
-                <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
-                <Route path="/login" element={<Login key="login" />} />
-              </Routes>
-            </div>
-            <div className="fixed top-0 right-0 z-50 p-4">
-              <Header />
-            </div>
-          </div>
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                  <Login key="login" />
+                </div>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <div className="flex h-screen w-screen overflow-hidden">
+                  <div className="w-[250px] h-full shrink-0 border-r border-gray-200 bg-white">
+                    <Sidebar />
+                  </div>
+                  <div className="flex-1 relative overflow-auto bg-gray-50">
+                    <Routes>
+                      <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
+                    </Routes>
+                  </div>
+                  <div className="fixed top-0 right-0 z-50 p-4">
+                    <Header />
+                  </div>
+                </div>
+              }
+            />
+          </Routes>
         </HeroUIProvider>
       </ThemeProvider>
     </Router>
