@@ -10,6 +10,7 @@ import Sidebar from "./components/sidebar";
 
 import Home from "./pages/home";
 import Login from "./pages/login";
+import Metrics from "./pages/metrics";
 
 function App() {
 
@@ -58,6 +59,7 @@ function App() {
                   <div className="flex-1 relative overflow-auto bg-gray-50">
                     <Routes>
                       <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
+                      <Route path="/metrics" element={<PrivateRoute element={<Metrics key="metrics" />} />} />
                     </Routes>
                   </div>
                   <div className="fixed top-0 right-0 z-50 p-4">
