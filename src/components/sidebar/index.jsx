@@ -13,7 +13,7 @@ const Sidebar = () => {
       <ul>
         {Array.isArray(routes) && routes.length > 0 ? (
           routes.map((route, index) => {
-            const path = route === "home" ? "/" : route;
+            const path = route === "home" ? "/" : `/${route}`;
             return (
               <li key={`${path}-${index}`}>
                 <Link to={path} className="sidebar-link text-black">
