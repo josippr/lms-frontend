@@ -1,12 +1,12 @@
 import { combineReducers } from "redux";
 
 import general from "./general";
-import theme from "./theme";
+import config from "./config";
 import profile from "./profile";
 
 const rootReducer = combineReducers({
   general: general,
-  theme: theme,
+  config: config,
   profile: profile,
 });
 

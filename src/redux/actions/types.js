@@ -1,5 +1,8 @@
 export const SET_IS_LOGGED_IN = 'SET_IS_LOGGED_IN';
+
+// config
 export const SET_THEME = 'SET_THEME';
+export const SET_LANGUAGE = 'SET_LANGUAGE';
 
 // profile
 export const SET_PROFILE = 'SET_PROFILE';

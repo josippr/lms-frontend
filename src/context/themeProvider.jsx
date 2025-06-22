@@ -1,11 +1,11 @@
 import { createContext, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setTheme } from "../redux/actions/theme"; 
+import { setTheme } from "../redux/actions/config"; 
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const theme = useSelector((state) => state.theme.theme);
+  const theme = useSelector((state) => state.config.theme);
   const dispatch = useDispatch();
 
   useEffect(() => {

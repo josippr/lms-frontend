@@ -2,15 +2,18 @@ import { SET_THEME } from "../actions/types";
 
 const initialState = {
   theme: "light",
+  language: "hr",
 };
 
-const theme = (state = initialState, action) => {
+const config = (state = initialState, action) => {
   switch (action.type) {
     case SET_THEME:
       return { ...state, theme: action.payload };
+    case "SET_LANGUAGE":
+      return { ...state, language: action.payload };
     default:
       return state;
   }
 };
 
-export default theme;
+export default config;

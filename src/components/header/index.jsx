@@ -9,11 +9,12 @@ import GlobeIcon from "../../assets/icons/globe";
 import SunIcon from "../../assets/icons/sun";
 import MoonIcon from "../../assets/icons/moon";
 
-import { setTheme } from "../../redux/actions/theme";
+import { setTheme } from "../../redux/actions/config";
+
 
 function Header() {
 
-  const theme = useSelector((state) => state.theme.theme);
+  const theme = useSelector((state) => state.config.theme);
   const dispatch = useDispatch();
 
   const handleThemeChange = () => {
