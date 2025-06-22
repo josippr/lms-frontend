@@ -3,6 +3,7 @@ import { ThemeProvider } from './context/themeProvider.jsx';
 import { fetchProfile } from "./service/apiService";
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import Header from "./components/header";
 import Sidebar from "./components/sidebar";
