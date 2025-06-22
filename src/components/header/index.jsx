@@ -11,6 +11,7 @@ import MoonIcon from "../../assets/icons/moon";
 
 import { setTheme } from "../../redux/actions/config";
 
+import LanguageSwitcher from "./languageSwitch";
 
 function Header() {
 
@@ -30,7 +31,8 @@ function Header() {
         <SearchIcon className="text-zinc-300" />
       </Button>
       <Button isIconOnly aria-label="Like" variant="bordered">
-        <GlobeIcon className="text-zinc-300" />
+        {/* <GlobeIcon className="text-zinc-300" /> */}
+        <LanguageSwitcher />
       </Button>
       <Button isIconOnly aria-label="Like" variant="bordered">
         <UserCircle className="text-zinc-300" />
