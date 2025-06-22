@@ -1,0 +1,16 @@
+{
+  "generalConfig": {
+    "language": {
+      "en": "Engleski",
+      "hr": "Hrvatski"
+    },
+    "routes": {
+      "home": "Početna",
+      "profile": "Profil",
+      "settings": "Postavke"
+    }
+  },
+  "home": {
+    "title": "Početna"
+  }
+}
