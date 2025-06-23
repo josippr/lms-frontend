@@ -45,8 +45,7 @@ function Header() {
   };
 
   return (
-    <header className="bg-transparent w-min h-16 flex items-center justify-end gap-4 absolute top-0 right-0">
-
+    <header className="bg-transparent w-full h-10 flex items-center justify-end gap-4 absolute top-0 right-0">
       <DropdownMenu>
         <DropdownMenuTrigger>
           <span variant="outline" size="icon" aria-label="Change language">
