@@ -44,8 +44,8 @@ function Login({ className, ...props }) {
 
       dispatch(
         setProfile({
-          username,
-          email: response.email ?? "",
+          username: profileResponse.username || "",
+          email: profileResponse.email ?? "",
           language: profileResponse.language,
           theme: profileResponse.darkMode ? "dark" : "light",
           routes: profileResponse.routes || [],
