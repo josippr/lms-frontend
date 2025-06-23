@@ -5,9 +5,13 @@
       "hr": "Hrvatski"
     },
     "routes": {
-      "home": "Početna",
-      "profile": "Profil",
-      "settings": "Postavke"
+      "route.home": "Upravljačka ploča",
+      "route.profile": "Profil",
+      "route.settings": "Postavke",
+      "route.login": "Prijava",
+      "route.metrics": "Metrike",
+      "route.notifications": "Obavijesti",
+      "route.logout": "Odjava"
     }
   },
   "home": {

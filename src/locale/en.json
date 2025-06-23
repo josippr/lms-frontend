@@ -5,9 +5,13 @@
       "hr": "Croatian"
     },
     "routes": {
-      "home": "Home",
-      "profile": "Profile",
-      "settings": "Settings"
+      "route.home": "Dashboard",
+      "route.profile": "Profile",
+      "route.settings": "Settings",
+      "route.login": "Login",
+      "route.metrics": "Metrics",
+      "route.notifications": "Notifications",
+      "route.logout": "Logout"
     }
   },
   "home": {
