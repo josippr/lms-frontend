@@ -19,6 +19,25 @@ export const loginUser = async (emailOrUsername, password) => {
   }
 };
 
+export const verifyToken = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/api/users/verify-token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to verify token. Please login again.');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error in verifyToken:', error);
+    throw error;
+  }
+};
+
 // fetch profile information
 export const fetchProfile = async (token) => {
   try {
