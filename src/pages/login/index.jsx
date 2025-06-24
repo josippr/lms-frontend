@@ -67,7 +67,7 @@ function Login({ className, ...props }) {
   };
 
   return (
-    <div className={cn("w-full h-full flex flex-col gap-6 justify-center items-center min-h-screen p-6", className)} {...props}>
+    <div className={cn("text-foreground bg-background w-full h-full flex flex-col gap-6 justify-center items-center min-h-screen p-6", className)} {...props}>
       <Card className="w-full max-w-md p-6">
         <CardHeader className={"w-full max-w-md p-6"}>
           <CardTitle>Login to your account</CardTitle>
