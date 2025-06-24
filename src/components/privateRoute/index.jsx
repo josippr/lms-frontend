@@ -1,22 +1,33 @@
 import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
+import { verifyToken } from '../../service/apiService';
+import { useSelector } from 'react-redux';
 
 const PrivateRoute = ({ element }) => {
   const [checking, setChecking] = useState(true);
-  const [token, setToken] = useState(null);
+  const [tokenValid, setTokenValid] = useState(false);
+
+  const isLoggedIn = useSelector((state) => state.general.isLoggedIn);
 
   useEffect(() => {
-    // TODO: replace with proper async check
     const storedToken = localStorage.getItem('token');
-    setToken(storedToken);
-    setChecking(false);
-  }, []);
+    if (storedToken) {
+      verifyToken(storedToken)
+        .then(() => setTokenValid(true))
+        .catch(() => {
+          localStorage.removeItem('token');
+          setTokenValid(false);
+        })
+        .finally(() => setChecking(false));
+    } else {
+      setTokenValid(false);
+      setChecking(false);
+    }
+  }, [isLoggedIn]);
 
-  if (checking) {
-    return <div>Loading...</div>;
-  }
+  if (checking) return <div>Loading...</div>;
 
-  return token ? element : <Navigate to="/login" />;
+  return tokenValid ? element : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;
