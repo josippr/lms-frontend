@@ -36,11 +36,21 @@ const chartConfig = {
 }
 
 export default function NodeStatusChart() {
+
+  const now = new Date().toLocaleString("hr-HR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).replace(',', '');
+
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Radial Chart - Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Node status</CardTitle>
+        <CardDescription>Last sync: {now}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
