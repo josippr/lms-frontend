@@ -78,3 +78,23 @@ export const updateProfile = async (token, profileData) => {
     throw error;
   }
 };
+
+// data api
+export const fetchData = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/api/data`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch data. Please try again.'); 
+    }
+    return await response.json(); 
+  } catch (error) {
+    console.error('Error in fetchData:', error);
+    throw error;
+  }
+};

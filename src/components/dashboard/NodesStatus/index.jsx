@@ -1,6 +1,6 @@
-import { TrendingUp } from "lucide-react"
+import React, { useState, useEffect } from "react"
+import { CircleAlert, CircleCheck } from "lucide-react"
 import {
-  Label,
   PolarGrid,
   PolarRadiusAxis,
   RadialBar,
@@ -16,104 +16,101 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ChartContainer } from "@/components/ui/chart"
+import moment from "moment"
 
-export const description = "A radial chart with text"
+export default function NodeStatusChart({ data }) {
+  const noOfNodes = data?.length || 0
+  const node = data?.[0]
 
-// Use a CSS variable for blue that adapts to dark/light mode
-// Define --chart-blue in your global CSS with appropriate values for each mode
-const chartData = [
-  { browser: "safari", visitors: 200, fill: "var(--color-chart-1)" },
-]
+  if (!node || !node.lastSync || isNaN(parseInt(node.lastSync))) {
+    return (
+      <Card className="flex flex-col items-center justify-center p-6 text-sm text-muted-foreground">
+        <CardHeader className="pb-0">
+          <CardTitle>Node status</CardTitle>
+          <CardDescription>Loading sync data…</CardDescription>
+        </CardHeader>
+        <CardContent className="text-center">Please wait…</CardContent>
+      </Card>
+    )
+  }
 
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  safari: {
-    label: "Safari",
-    color: "var(--chart-2)",
-  },
-}
+  const lastSyncUnix = parseInt(node.lastSync, 10)
+  const nowUnix = Math.floor(Date.now() / 1000)
+  const minutesAgo = Math.max(0, Math.floor((nowUnix - lastSyncUnix) / 60))
+  const isOnline = minutesAgo <= 10
+  const statusColor = isOnline ? "#22c55e" : "#ef4444"
 
-export default function NodeStatusChart() {
+  const chartData = [
+    {
+      name: node.deviceName,
+      value: 120,
+      fill: statusColor,
+    },
+  ]
 
-  const now = new Date().toLocaleString("hr-HR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).replace(',', '');
+  const chartConfig = {}
+
+
+  const formattedLastSync = moment.unix(lastSyncUnix).format("DD.MM.YYYY HH:mm")
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Node status</CardTitle>
-        <CardDescription>Last sync: {now}</CardDescription>
+        <CardDescription>Last sync: {formattedLastSync}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-0 relative">
         <ChartContainer
           config={chartConfig}
           className="mx-auto aspect-square max-h-[250px]"
         >
           <RadialBarChart
             data={chartData}
-            startAngle={0}
-            endAngle={250}
+            startAngle={90}
+            endAngle={-270}
             innerRadius={80}
             outerRadius={110}
           >
-            <PolarGrid
-              gridType="circle"
-              radialLines={false}
-              stroke="none"
-              className="first:fill-muted last:fill-background"
-              polarRadius={[86, 74]}
+            <PolarGrid radialLines={false} stroke="none" />
+            <PolarRadiusAxis
+              type="number"
+              domain={[0, 120]}
+              tick={false}
+              axisLine={false}
             />
-            <RadialBar dataKey="visitors" background cornerRadius={10} />
-            <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-4xl font-bold"
-                        >
-                          {chartData[0].visitors.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Visitors
-                        </tspan>
-                      </text>
-                    )
-                  }
-                }}
-              />
-            </PolarRadiusAxis>
+            <RadialBar
+              dataKey="value"
+              cornerRadius={10}
+              background={{ fill: "#e5e7eb" }}
+              fill={statusColor}
+            />
           </RadialBarChart>
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-4xl font-bold text-foreground">
+              {minutesAgo} min
+            </div>
+            <div className="text-muted-foreground text-sm">Since last sync</div>
+          </div>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          {isOnline ? (
+            <p className="flex items-center gap-2">
+              <CircleCheck className="h-4 w-4 text-green-600" /> Node is online
+            </p>
+          ) : (
+            <p>
+              <CircleAlert className="h-4 w-4 text-red-600" /> Node is offline
+            </p>
+          )}
         </div>
         <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
-        </div>
+          Showing sync activity for last node update
+        </div>  
       </CardFooter>
     </Card>
   )
 }
+
