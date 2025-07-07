@@ -1,8 +1,7 @@
-const API_URL = import.meta.env.VITE_BASE_URL;
 
 export const loginUser = async (emailOrUsername, password) => {
   try {
-    const response = await fetch(`${API_URL}/api/users/login`, {
+    const response = await fetch(`https://lms-stage.josip.prpic.from.hr/api/users/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -21,7 +20,7 @@ export const loginUser = async (emailOrUsername, password) => {
 
 export const verifyToken = async (token) => {
   try {
-    const response = await fetch(`${API_URL}/api/users/verify-token`, {
+    const response = await fetch(`https://lms-stage.josip.prpic.from.hr/api/users/verify-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -41,7 +40,7 @@ export const verifyToken = async (token) => {
 // fetch profile information
 export const fetchProfile = async (token) => {
   try {
-    const response = await fetch(`${API_URL}/api/profile`, {
+    const response = await fetch(`https://lms-stage.josip.prpic.from.hr/api/profile`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -61,7 +60,7 @@ export const fetchProfile = async (token) => {
 // update profile information
 export const updateProfile = async (token, profileData) => {
   try {
-    const response = await fetch(`${API_URL}/api/profile`, {
+    const response = await fetch(`https://lms-stage.josip.prpic.from.hr/api/profile`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -82,7 +81,7 @@ export const updateProfile = async (token, profileData) => {
 // data api
 export const fetchData = async (token) => {
   try {
-    const response = await fetch(`${API_URL}/api/data`, {
+    const response = await fetch(`https://lms-stage.josip.prpic.from.hr/api/data`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
