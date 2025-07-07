@@ -1,4 +1,4 @@
-const VITE_API_BASE = import.meta.env.PROD ? '' : '/api';
+const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 
 export const loginUser = async (emailOrUsername, password) => {
   try {
