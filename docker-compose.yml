@@ -2,8 +2,6 @@ version: "3"
 services:
   frontend:
     build: .
-    image: lms-frontend
-    container_name: lms-frontend
     ports:
-      - "8080:80"
+      - "3002:80"
     restart: unless-stopped
