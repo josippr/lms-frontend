@@ -7,17 +7,21 @@ import { defineConfig } from "vite"
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: { "@": path.resolve(__dirname, "./src") },
   },
+  // This only works in dev
   server: {
     proxy: {
       '/api': {
-        target: 'https://lms-stage.josip-prpic.from.hr/api',
+        target: 'https://lms-stage.josip-prpic.from.hr',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
+  },
+  // For production build
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
   }
 })
