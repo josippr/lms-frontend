@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://lms-stage.josip.prpic.from.hr',
+        target: 'https://lms-stage.josip-prpic.from.hr',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }
