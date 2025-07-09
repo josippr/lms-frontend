@@ -5,6 +5,7 @@ name: deploy-frontend
 trigger:
   event:
     - custom
+    - promote
 
 steps:
   - name: install-and-build
