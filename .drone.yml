@@ -30,6 +30,8 @@ steps:
         sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -p 22 $SSH_USER@$SSH_HOST "
           cd /mnt/data/deployments/lms-frontend
           git pull origin master
+          npm install
+          npm run build
           docker compose down
           docker compose build --no-cache
           docker compose up -d
