@@ -4,9 +4,15 @@ name: deploy-frontend
 
 trigger:
   event:
-    - custom  # Only manual trigger via Drone UI
+    - custom
 
 steps:
+  - name: install-and-build
+    image: node:18-alpine
+    commands:
+      - npm install
+      - npm run build
+
   - name: build-image
     image: docker:dind
     volumes:
