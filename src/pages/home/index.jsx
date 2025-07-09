@@ -13,11 +13,9 @@ function Home() {
   const dispatch = useDispatch();
 
   const nodeStatusData = useSelector((state) => state.charts.nodeStatus);
-  console.log("Node Status Data:", nodeStatusData);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    console.log('Token:', token);
     if (token) {
       fetchDataAndLog(token);
     } else {
@@ -28,7 +26,6 @@ function Home() {
   const fetchDataAndLog = async (token) => {
     try {
       const data = await fetchData(token);
-      console.log('Fetched data:', data);
       dispatch(setNodeStatus(data.nodeStatusChart));
     } catch (error) {
       console.error('Error fetching data:', error);

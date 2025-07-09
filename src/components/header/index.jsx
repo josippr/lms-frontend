@@ -38,7 +38,6 @@ function Header() {
   };
 
   const handleLanguageChange = (language) => {
-    console.log("Changing language to:", language);
     i18n.changeLanguage(language);
     dispatch(setLanguage(language));
 
