@@ -70,6 +70,7 @@ function Login({ className, ...props }) {
     <div className={cn("text-foreground bg-background w-full h-full flex flex-col gap-6 justify-center items-center min-h-screen p-6", className)} {...props}>
       <Card className="w-full max-w-md p-6">
         <CardHeader className={"w-full max-w-md p-6"}>
+          <h1 className="w-full max-w-sm text-2xl font-bold mb-8">Live Network Monitoring System</h1>
           <CardTitle>Login to your account</CardTitle>
           <CardDescription>
             Enter your credentials below to access your dashboard
