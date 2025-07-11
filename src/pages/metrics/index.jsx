@@ -257,7 +257,13 @@ function MetricsPage() {
               <Card className="pt-0">
                 <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
                   <div className="grid flex-1 gap-1">
-                    <CardTitle>System Metrics</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <span className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-600"></span>
+                      </span>
+                      Live System Metrics
+                    </CardTitle>
                     <CardDescription>
                       Showing system performance metrics over time
                     </CardDescription>
