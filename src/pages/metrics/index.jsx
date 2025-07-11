@@ -148,22 +148,18 @@ function MetricsPage() {
 
   // Listen to WebSocket live updates
   useEffect(() => {
-    socket.on("new_metric", (metric) => {
-      const isoMetric = {
-        ...metric,
-        timestamp: new Date(metric.timestamp).toISOString(),
-      };
-
+    socket.on('new_metric', (metric) => {
       setMetrics((prev) => {
-        const updated = [...prev, isoMetric];
-        return updated.slice(-MAX_POINTS);
+        const updated = [...prev, {
+          ...metric,
+          timestamp: new Date(metric.timestamp).toISOString(),
+        }];
+        return updated.slice(-MAX_POINTS); // limit live buffer
       });
-
-      if (!uid && metric.uid) setUid(metric.uid);
     });
 
-    return () => socket.off("new_metric");
-  }, [uid]);
+    return () => socket.off('new_metric');
+  }, []);
 
   // Fetch historical metrics for the given UID
   useEffect(() => {
@@ -180,7 +176,6 @@ function MetricsPage() {
           memoryUsed: entry.hardware.memory_used_percent,
         }));
         setHistoricalMetrics(formatted);
-        setHistoricalMetrics(formatted);
       } catch (error) {
         console.error("Failed to fetch historical metrics:", error);
       }
@@ -189,15 +184,27 @@ function MetricsPage() {
     fetchHistorical();
   }, [uid, token]);
 
-  const filteredData = historicalMetrics.filter((item) => {
-    const date = new Date(item.timestamp);
-    const now = new Date();
-    const startDate = new Date(now);
-    if (timeRange === "6h") startDate.setHours(now.getHours() - 6);
-    else if (timeRange === "12h") startDate.setHours(now.getHours() - 12);
-    else startDate.setHours(now.getHours() - 24);
-    return date >= startDate;
-  });
+  useEffect(() => {
+    if (!uid && latest?.uid) {
+      setUid(latest.uid);
+    }
+  }, [latest, uid]);
+
+  const combinedData = [...historicalMetrics, ...metrics];
+  const filteredData = combinedData
+    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+    .filter((item) => {
+      const date = new Date(item.timestamp)
+      const now = new Date()
+      let hoursToSubtract = 24
+      if (timeRange === "12h") hoursToSubtract = 12
+      else if (timeRange === "6h") hoursToSubtract = 6
+
+      const startDate = new Date(now)
+      startDate.setHours(startDate.getHours() - hoursToSubtract)
+
+      return date >= startDate
+    });
 
   return (
     <div className={`${theme} text-foreground bg-background w-full min-h-screen p-6 space-y-6`}>
