@@ -1,7 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { useTheme } from '../../context/themeProvider.jsx';
+import React, { useState, useEffect } from "react";
+import { useTheme } from "../../context/themeProvider.jsx";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  RadialBarChart,
+  RadialBar,
+  PolarGrid,
+  PolarRadiusAxis,
+  Label as RechartsLabel,
+} from "recharts";
 
 import {
   Card,
@@ -9,35 +20,51 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  RadialBarChart,
-  RadialBar,
-  PolarRadiusAxis,
-  PolarGrid,
-  Label as RechartsLabel,
-} from 'recharts';
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-import { ChartContainer } from '@/components/ui/chart';
-import { formatDistanceToNow, parseISO } from 'date-fns';
-import { TrendingUp } from 'lucide-react';
-
-import socket from '@/lib/socket';
+import { formatDistanceToNow, parseISO } from "date-fns";
+import { fetchMetrics } from "@/service/apiService.js";
+import socket from "@/lib/socket";
 
 const MAX_POINTS = 30;
 
-function RadialChartCard({ value, label, color = 'var(--chart-2)' }) {
+const chartConfig = {
+  metrics: {
+    label: "System Metrics",
+  },
+  temperature: {
+    label: "CPU Temp (°C)",
+    color: "var(--chart-1)",
+  },
+  cpuPercent: {
+    label: "CPU Usage (%)",
+    color: "var(--chart-4)",
+  },
+  memoryUsed: {
+    label: "RAM Used (%)",
+    color: "var(--chart-5)",
+  },
+};
+
+function RadialChartCard({ value, label, color = "var(--chart-2)" }) {
   const chartData = [
     { name: label, value, fill: color },
-    { name: 'bg', value: 100, fill: 'var(--muted)' }, // background track
+    { name: "bg", value: 100, fill: "var(--muted)" },
   ];
 
   const chartConfig = {
@@ -63,7 +90,6 @@ function RadialChartCard({ value, label, color = 'var(--chart-2)' }) {
               gridType="circle"
               radialLines={false}
               stroke="none"
-              className="first:fill-muted last:fill-background"
               polarRadius={[86, 74]}
             />
             <RadialBar
@@ -75,7 +101,7 @@ function RadialChartCard({ value, label, color = 'var(--chart-2)' }) {
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
               <RechartsLabel
                 content={({ viewBox }) => {
-                  if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                     return (
                       <text
                         x={viewBox.cx}
@@ -113,22 +139,65 @@ function RadialChartCard({ value, label, color = 'var(--chart-2)' }) {
 function MetricsPage() {
   const { theme } = useTheme();
   const [metrics, setMetrics] = useState([]);
-
-  useEffect(() => {
-    socket.on('new_metric', (metric) => {
-      setMetrics((prev) => {
-        const updated = [...prev, {
-          ...metric,
-          timestamp: new Date(metric.timestamp).toISOString(),
-        }];
-        return updated.slice(-MAX_POINTS);
-      });
-    });
-
-    return () => socket.off('new_metric');
-  }, []);
+  const [historicalMetrics, setHistoricalMetrics] = useState([]);
+  const [timeRange, setTimeRange] = useState("24h");
+  const [uid, setUid] = useState(null);
 
   const latest = metrics.at(-1);
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  // Listen to WebSocket live updates
+  useEffect(() => {
+    socket.on("new_metric", (metric) => {
+      const isoMetric = {
+        ...metric,
+        timestamp: new Date(metric.timestamp).toISOString(),
+      };
+
+      setMetrics((prev) => {
+        const updated = [...prev, isoMetric];
+        return updated.slice(-MAX_POINTS);
+      });
+
+      if (!uid && metric.uid) setUid(metric.uid);
+    });
+
+    return () => socket.off("new_metric");
+  }, [uid]);
+
+  // Fetch historical metrics for the given UID
+  useEffect(() => {
+    const fetchHistorical = async () => {
+      if (!uid || !token) return;
+      try {
+        const data = await fetchMetrics(uid, token);
+        const formatted = data.map((entry) => ({
+          timestamp: new Date(entry.timestamp).toISOString(),
+          temperature: entry.hardware.cpu_temperature_c,
+          memory: entry.hardware.memory_total_mb,
+          disk: entry.hardware.disk_total_mb,
+          cpuPercent: entry.hardware.cpu_percent,
+          memoryUsed: entry.hardware.memory_used_percent,
+        }));
+        setHistoricalMetrics(formatted);
+        setHistoricalMetrics(formatted);
+      } catch (error) {
+        console.error("Failed to fetch historical metrics:", error);
+      }
+    };
+
+    fetchHistorical();
+  }, [uid, token]);
+
+  const filteredData = historicalMetrics.filter((item) => {
+    const date = new Date(item.timestamp);
+    const now = new Date();
+    const startDate = new Date(now);
+    if (timeRange === "6h") startDate.setHours(now.getHours() - 6);
+    else if (timeRange === "12h") startDate.setHours(now.getHours() - 12);
+    else startDate.setHours(now.getHours() - 24);
+    return date >= startDate;
+  });
 
   return (
     <div className={`${theme} text-foreground bg-background w-full min-h-screen p-6 space-y-6`}>
@@ -146,42 +215,97 @@ function MetricsPage() {
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4">
             <div>
               <Label className="text-muted-foreground text-xs">Hostname</Label>
-              <div className="text-lg font-medium">{latest?.hostname || '...'}</div>
+              <div className="text-lg font-medium">{latest?.hostname || "..."}</div>
             </div>
             <div>
               <Label className="text-muted-foreground text-xs">UID</Label>
-              <div className="text-sm break-all">{latest?.uid || '...'}</div>
+              <div className="text-sm break-all">{latest?.uid || "..."}</div>
             </div>
             <div>
               <Label className="text-muted-foreground text-xs">CPU Temp</Label>
-              <div className="text-sm">{latest?.temperature ?? '--'}°C</div>
+              <div className="text-sm">{latest?.temperature ?? "--"}°C</div>
             </div>
             <div>
-              <Label className="text-muted-foreground text-xs">Disk Usage</Label>
-              <div className="text-sm">{latest?.disk ?? '--'} MB</div>
+              <Label className="text-muted-foreground text-xs">Disk Size</Label>
+              <div className="text-sm">{latest?.disk ?? "--"} MB</div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <div className="col-span-1">
-              <RadialChartCard value={latest?.cpuPercent || 0} label="CPU Usage" color="var(--chart-3)" />
-            </div>
-            <div className="col-span-1">
-              <RadialChartCard value={latest?.memoryUsed || 0} label="RAM Usage" color="var(--chart-4)" />
+            <div className="col-span-2">
+              <RadialChartCard
+                value={latest?.cpuPercent || 0}
+                label="CPU Usage"
+                color="var(--chart-3)"
+              />
             </div>
             <div className="col-span-2">
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={metrics}>
-                  <XAxis dataKey="timestamp" tickFormatter={(t) => new Date(t).toLocaleTimeString()} />
-                  <YAxis domain={['auto', 'auto']} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="temperature" name="CPU Temp (°C)" stroke="#F87171" dot={false} />
-                  <Line type="monotone" dataKey="memory" name="Memory (MB)" stroke="#60A5FA" dot={false} />
-                  <Line type="monotone" dataKey="disk" name="Disk (MB)" stroke="#34D399" dot={false} />
-                  <Line type="monotone" dataKey="cpuPercent" name="CPU Usage (%)" stroke="#FBBF24" dot={false} />
-                  <Line type="monotone" dataKey="memoryUsed" name="RAM Used (%)" stroke="#A78BFA" dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
+              <RadialChartCard
+                value={latest?.memoryUsed || 0}
+                label="RAM Usage"
+                color="var(--chart-4)"
+              />
+            </div>
+            <div className="col-span-4">
+              <Card className="pt-0">
+                <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                  <div className="grid flex-1 gap-1">
+                    <CardTitle>System Metrics</CardTitle>
+                    <CardDescription>
+                      Showing system performance metrics over time
+                    </CardDescription>
+                  </div>
+                  <Select value={timeRange} onValueChange={setTimeRange}>
+                    <SelectTrigger className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+                      <SelectValue placeholder="Last 24 hours" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="24h" className="rounded-lg">Last 24 hours</SelectItem>
+                      <SelectItem value="12h" className="rounded-lg">Last 12 hours</SelectItem>
+                      <SelectItem value="6h" className="rounded-lg">Last 6 hours</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </CardHeader>
+                <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+                  <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+                    <LineChart data={filteredData}>
+                      <CartesianGrid vertical={false} />
+                      <XAxis
+                        dataKey="timestamp"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        minTickGap={32}
+                        tickFormatter={(value) =>
+                          new Date(value).toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                          })
+                        }
+                      />
+                      <ChartTooltip
+                        cursor={false}
+                        content={
+                          <ChartTooltipContent
+                            labelFormatter={(value) =>
+                              new Date(value).toLocaleTimeString("en-US", {
+                                hour: "numeric",
+                                minute: "2-digit",
+                                second: "2-digit",
+                              })
+                            }
+                            indicator="dot"
+                          />
+                        }
+                      />
+                      <Line dataKey="temperature" type="monotone" stroke="var(--chart-1)" dot={false} activeDot={{ r: 6 }} />
+                      <Line dataKey="cpuPercent" type="monotone" stroke="var(--chart-4)" dot={false} activeDot={{ r: 6 }} />
+                      <Line dataKey="memoryUsed" type="monotone" stroke="var(--chart-5)" dot={false} activeDot={{ r: 6 }} />
+                      <ChartLegend content={<ChartLegendContent />} />
+                    </LineChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </CardContent>

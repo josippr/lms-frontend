@@ -98,3 +98,24 @@ export const fetchData = async (token) => {
     throw error;
   }
 };
+
+export const fetchMetrics = async (uid, token) => {
+  try {
+    const response = await fetch(`${API_URL}/api/metrics/${uid}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch metrics for UID: ${uid}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error in fetchMetrics for UID ${uid}:`, error);
+    throw error;
+  }
+};
