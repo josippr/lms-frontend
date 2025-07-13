@@ -19,3 +19,9 @@ export const SET_PROFILE_LOADED = 'SET_PROFILE_LOADED';
 
 // charts
 export const SET_NODE_STATUS = 'SET_NODE_STATUS';
+
+// metrics page
+export const SET_LIVE_METRICS = 'SET_LIVE_METRICS';
+export const SET_HISTORICAL_METRICS = 'SET_HISTORICAL_METRICS';
+export const APPEND_LIVE_METRIC = 'APPEND_LIVE_METRIC';
+export const CLEAR_METRICS = 'CLEAR_METRICS';
