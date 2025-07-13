@@ -39,43 +39,31 @@ import {
 
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { fetchMetrics } from "@/service/apiService.js";
+import { useSelector } from "react-redux";
 import socket from "@/lib/socket";
 
 const MAX_POINTS = 30;
 
 const chartConfig = {
-  metrics: {
-    label: "System Metrics",
-  },
-  temperature: {
-    label: "CPU Temp (°C)",
-    color: "var(--chart-1)",
-  },
-  cpuPercent: {
-    label: "CPU Usage (%)",
-    color: "var(--chart-4)",
-  },
-  memoryUsed: {
-    label: "RAM Used (%)",
-    color: "var(--chart-5)",
-  },
+  metrics: { label: "System Metrics" },
+  temperature: { label: "CPU Temp (°C)", color: "var(--chart-1)" },
+  cpuPercent: { label: "CPU Usage (%)", color: "var(--chart-4)" },
+  memoryUsed: { label: "RAM Used (%)", color: "var(--chart-5)" },
 };
 
-function RadialChartCard({ value, label, color = "var(--chart-2)" }) {
+function RadialChartCard({ value, label, color = "var(--chart-2)", subtitle = "Live % Usage" }) {
   const chartData = [
     { name: label, value, fill: color },
     { name: "bg", value: 100, fill: "var(--muted)" },
   ];
 
-  const chartConfig = {
-    value: { label },
-  };
+  const chartConfig = { value: { label } };
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>{label}</CardTitle>
-        <CardDescription>Live % Usage</CardDescription>
+        <CardDescription>{subtitle}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
@@ -86,18 +74,8 @@ function RadialChartCard({ value, label, color = "var(--chart-2)" }) {
             innerRadius={80}
             outerRadius={110}
           >
-            <PolarGrid
-              gridType="circle"
-              radialLines={false}
-              stroke="none"
-              polarRadius={[86, 74]}
-            />
-            <RadialBar
-              dataKey="value"
-              background
-              cornerRadius={10}
-              isAnimationActive={false}
-            />
+            <PolarGrid gridType="circle" radialLines={false} stroke="none" polarRadius={[86, 74]} />
+            <RadialBar dataKey="value" background cornerRadius={10} isAnimationActive={false} />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
               <RechartsLabel
                 content={({ viewBox }) => {
@@ -138,30 +116,38 @@ function RadialChartCard({ value, label, color = "var(--chart-2)" }) {
 
 function MetricsPage() {
   const { theme } = useTheme();
+  const uid = useSelector((state) => state.profile?.linkedNodes?.[0]);
   const [metrics, setMetrics] = useState([]);
   const [historicalMetrics, setHistoricalMetrics] = useState([]);
   const [timeRange, setTimeRange] = useState("24h");
-  const [uid, setUid] = useState(null);
-
-  const latest = metrics.at(-1);
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  // Listen to WebSocket live updates
+  const latestLive = metrics.at(-1);
+  const latestHistorical = historicalMetrics
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+  const latest = latestLive || latestHistorical;
+  const isLive = !!latestLive;
+
+  console.log("Last historical metric:", latestHistorical);
+  console.log("Latest: ", latest);
+
   useEffect(() => {
-    socket.on('new_metric', (metric) => {
+    socket.on("new_metric", (metric) => {
+      const normalized = {
+        ...metric,
+        timestamp: new Date(metric.timestamp).toISOString(),
+      };
+
       setMetrics((prev) => {
-        const updated = [...prev, {
-          ...metric,
-          timestamp: new Date(metric.timestamp).toISOString(),
-        }];
-        return updated.slice(-MAX_POINTS); // limit live buffer
+        const updated = [...prev, normalized];
+        return updated.slice(-MAX_POINTS);
       });
     });
 
-    return () => socket.off('new_metric');
-  }, []);
+    return () => socket.off("new_metric");
+  }, [uid]);
 
-  // Fetch historical metrics for the given UID
+  // Fetch historical metrics
   useEffect(() => {
     const fetchHistorical = async () => {
       if (!uid || !token) return;
@@ -174,6 +160,8 @@ function MetricsPage() {
           disk: entry.hardware.disk_total_mb,
           cpuPercent: entry.hardware.cpu_percent,
           memoryUsed: entry.hardware.memory_used_percent,
+          hostname: entry.hardware.hostname,
+          uid: entry.uid,
         }));
         setHistoricalMetrics(formatted);
       } catch (error) {
@@ -184,26 +172,16 @@ function MetricsPage() {
     fetchHistorical();
   }, [uid, token]);
 
-  useEffect(() => {
-    if (!uid && latest?.uid) {
-      setUid(latest.uid);
-    }
-  }, [latest, uid]);
-
   const combinedData = [...historicalMetrics, ...metrics];
   const filteredData = combinedData
     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
     .filter((item) => {
-      const date = new Date(item.timestamp)
-      const now = new Date()
-      let hoursToSubtract = 24
-      if (timeRange === "12h") hoursToSubtract = 12
-      else if (timeRange === "6h") hoursToSubtract = 6
-
-      const startDate = new Date(now)
-      startDate.setHours(startDate.getHours() - hoursToSubtract)
-
-      return date >= startDate
+      const date = new Date(item.timestamp);
+      const now = new Date();
+      const hours = timeRange === "12h" ? 12 : timeRange === "6h" ? 6 : 24;
+      const startDate = new Date(now);
+      startDate.setHours(startDate.getHours() - hours);
+      return date >= startDate;
     });
 
   return (
@@ -212,11 +190,11 @@ function MetricsPage() {
         <CardContent className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold">Live Device Metrics</h3>
-            {latest && (
-              <span className="text-sm text-muted-foreground">
-                Updated {formatDistanceToNow(parseISO(latest.timestamp))} ago
-              </span>
-            )}
+              {latest?.timestamp && (
+                <span className="text-sm text-muted-foreground">
+                  Updated {formatDistanceToNow(new Date(latest.timestamp), { addSuffix: true })}
+                </span>
+              )}
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4">
@@ -244,6 +222,13 @@ function MetricsPage() {
                 value={latest?.cpuPercent || 0}
                 label="CPU Usage"
                 color="var(--chart-3)"
+                subtitle={
+                  isLive
+                    ? "Live % Usage"
+                    : latest?.timestamp
+                    ? `Last received data was ${formatDistanceToNow(new Date(latest.timestamp), { addSuffix: true })}`
+                    : "No data available"
+                }
               />
             </div>
             <div className="col-span-2">
@@ -251,8 +236,16 @@ function MetricsPage() {
                 value={latest?.memoryUsed || 0}
                 label="RAM Usage"
                 color="var(--chart-4)"
+                subtitle={
+                  isLive
+                    ? "Live % Usage"
+                    : latest?.timestamp
+                    ? `Last received data was ${formatDistanceToNow(new Date(latest.timestamp), { addSuffix: true })}`
+                    : "No data available"
+                }
               />
             </div>
+
             <div className="col-span-4">
               <Card className="pt-0">
                 <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
