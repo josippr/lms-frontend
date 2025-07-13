@@ -128,9 +128,6 @@ function MetricsPage() {
   const latest = latestLive || latestHistorical;
   const isLive = !!latestLive;
 
-  console.log("Last historical metric:", latestHistorical);
-  console.log("Latest: ", latest);
-
   useEffect(() => {
     socket.on("new_metric", (metric) => {
       const normalized = {
