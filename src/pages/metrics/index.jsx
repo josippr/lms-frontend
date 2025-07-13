@@ -39,7 +39,12 @@ import {
 
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { fetchMetrics } from "@/service/apiService.js";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setLiveMetrics,
+  setHistoricalMetrics,
+  appendLiveMetric,
+} from "@/redux/actions/metrics";
 import socket from "@/lib/socket";
 
 const MAX_POINTS = 30;
@@ -116,9 +121,11 @@ function RadialChartCard({ value, label, color = "var(--chart-2)", subtitle = "L
 
 function MetricsPage() {
   const { theme } = useTheme();
+  const dispatch = useDispatch();
+
   const uid = useSelector((state) => state.profile?.linkedNodes?.[0]);
-  const [metrics, setMetrics] = useState([]);
-  const [historicalMetrics, setHistoricalMetrics] = useState([]);
+  const metrics = useSelector((state) => state.metrics.live);
+  const historicalMetrics = useSelector((state) => state.metrics.historical);
   const [timeRange, setTimeRange] = useState("24h");
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -135,10 +142,7 @@ function MetricsPage() {
         timestamp: new Date(metric.timestamp).toISOString(),
       };
 
-      setMetrics((prev) => {
-        const updated = [...prev, normalized];
-        return updated.slice(-MAX_POINTS);
-      });
+      dispatch(appendLiveMetric(normalized));
     });
 
     return () => socket.off("new_metric");
@@ -160,7 +164,7 @@ function MetricsPage() {
           hostname: entry.hardware.hostname,
           uid: entry.uid,
         }));
-        setHistoricalMetrics(formatted);
+        dispatch(setHistoricalMetrics(formatted));
       } catch (error) {
         console.error("Failed to fetch historical metrics:", error);
       }
