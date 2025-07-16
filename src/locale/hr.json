@@ -11,7 +11,8 @@
       "route.login": "Prijava",
       "route.metrics": "Metrike",
       "route.notifications": "Obavijesti",
-      "route.logout": "Odjava"
+      "route.logout": "Odjava",
+      "route.networkStatus": "Status mreže"
     }
   },
   "home": {

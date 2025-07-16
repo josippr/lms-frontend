@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 import { 
   ChevronRight,
   LayoutDashboard,
-  CircleGauge
+  CircleGauge,
+  Network
 } from "lucide-react";
 
 import {
@@ -29,6 +30,7 @@ import { useTranslation } from "react-i18next";
 const iconMap = {
   LayoutDashboard,
   CircleGauge,
+  Network,
 };
 
 export function NavMain() {
