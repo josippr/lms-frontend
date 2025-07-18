@@ -1,7 +1,7 @@
 import { SET_THEME } from "../actions/types";
 
 const initialState = {
-  theme: "light",
+  theme: "dark",
   language: "hr",
 };
 
