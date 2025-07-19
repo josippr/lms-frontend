@@ -56,7 +56,7 @@ function App() {
           <Route
             path="*"
             element={
-              <div className="flex h-screen w-screen overflow-hidden">
+              <div className="flex h-auto w-auto overflow-x-hidden overflow-y-auto">
                 <div className="w-full shrink-0 border-r border-gray-200 bg-white">
                   <SidebarProvider>
                     <AppSidebar />
