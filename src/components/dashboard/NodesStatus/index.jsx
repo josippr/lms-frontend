@@ -20,7 +20,7 @@ import moment from "moment"
 
 export default function NodeStatusChart({ data }) {
   const noOfNodes = data?.length || 0
-  const node = data?.[0]
+  const node = data;
 
   if (!node || !node.lastSync || isNaN(parseInt(node.lastSync))) {
     return (
@@ -54,7 +54,7 @@ export default function NodeStatusChart({ data }) {
   const formattedLastSync = moment.unix(lastSyncUnix).format("DD.MM.YYYY HH:mm")
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col w-full sm:w-auto">
       <CardHeader className="items-center pb-0">
         <CardTitle>Node status</CardTitle>
         <CardDescription>Last sync: {formattedLastSync}</CardDescription>
