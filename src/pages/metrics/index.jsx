@@ -123,7 +123,7 @@ function MetricsPage() {
   const { theme } = useTheme();
   const dispatch = useDispatch();
 
-  const uid = useSelector((state) => state.profile?.linkedNodes?.[0]);
+  const uid = useSelector((state) => state.profile?.linkedDevices?.[0]);
   const metrics = useSelector((state) => state.metrics.live);
   const historicalMetrics = useSelector((state) => state.metrics.historical);
   const [timeRange, setTimeRange] = useState("24h");
