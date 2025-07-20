@@ -45,6 +45,7 @@ const chartConfig = {
 export default function ChartRadialSimple() {
   const networkStatus = useSelector((state) => state.charts.networkStatus?.hourlyAverage?.networkParams)
   const current = useSelector((state) => state.charts.networkStatus?.hourlyAverage?.status)
+  const invalidFlag = useSelector((state) => state.charts.networkStatus?.hourlyAverage?.invalidFlag)
   const message = useSelector((state) => state.charts.networkStatus?.hourlyAverage?.message)
 
   if (!networkStatus) return null
@@ -98,6 +99,9 @@ export default function ChartRadialSimple() {
           </Badge>
         )}
       </CardHeader>
+      {invalidFlag ? (
+        <h1>There is no valid data for the last hour.</h1>
+      ) : (
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
@@ -141,6 +145,7 @@ export default function ChartRadialSimple() {
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
+      )}
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium text-center">
           {message}
