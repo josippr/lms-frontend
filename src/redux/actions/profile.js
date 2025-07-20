@@ -6,7 +6,7 @@ import {
   UPDATE_THEME,
   UPDATE_NOTIFICATION_PREFERENCE,
   SET_LICENSE_EXPIRATION,
-  SET_LINKED_DEVICES,
+  SET_LINKED_NODES,
   SET_PROFILE_STATUS,
   SET_PROFILE_ERROR,
   SET_PROFILE_LOADED,
@@ -47,9 +47,9 @@ export const setLicenseExpiration = (date) => ({
   payload: date,
 });
 
-export const setLinkedDevices = (devices) => ({
-  type: SET_LINKED_DEVICES,
-  payload: devices,
+export const setLinkedNodes = (nodes) => ({
+  type: SET_LINKED_NODES,
+  payload: nodes,
 });
 
 export const setProfileStatus = (status) => ({

@@ -6,7 +6,7 @@ import {
   UPDATE_THEME,
   UPDATE_NOTIFICATION_PREFERENCE,
   SET_LICENSE_EXPIRATION,
-  SET_LINKED_DEVICES,
+  SET_LINKED_NODES,
   SET_PROFILE_STATUS,
   SET_PROFILE_ERROR,
   SET_PROFILE_LOADED,
@@ -25,7 +25,7 @@ const initialState = {
     push: true,
   },
   licenseExpirationDate: null,
-  linkedDevices: [],
+  linkedNodes: [],
   status: 'idle',
   error: null,
 };
@@ -62,8 +62,8 @@ export default function profileReducer(state = initialState, action) {
     case SET_LICENSE_EXPIRATION:
       return { ...state, licenseExpirationDate: action.payload };
 
-    case SET_LINKED_DEVICES:
-      return { ...state, linkedDevices: action.payload };
+    case SET_LINKED_NODES:
+      return { ...state, linkedNodes: action.payload };
 
     case SET_PROFILE_STATUS:
       return { ...state, status: action.payload };

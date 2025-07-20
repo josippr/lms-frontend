@@ -51,7 +51,7 @@ function Login({ className, ...props }) {
           routes: profileResponse.routes || [],
           notificationPreferences: profileResponse.notificationPreferences,
           licenseExpirationDate: profileResponse.license?.expiryDate || null,
-          linkedDevices: profileResponse.linkedNodes || [],
+          linkedNodes: profileResponse.linkedNodes || [],
         })
       );
       dispatch(setProfileLoaded(true));
