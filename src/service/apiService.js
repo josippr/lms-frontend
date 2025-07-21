@@ -119,3 +119,23 @@ export const fetchMetrics = async (uid, token) => {
     throw error;
   }
 };
+
+export const fetchNetworkStatus = async (uid, token) => {
+  try {
+    const response = await fetch(`${API_URL}/api/networkStatus/${uid}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch network status for UID: ${uid}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Error in fetchNetworkStatus for UID ${uid}:`, error);
+    throw error;
+  }
+};
