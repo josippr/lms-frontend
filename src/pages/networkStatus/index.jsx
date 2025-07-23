@@ -376,7 +376,16 @@ export default function NetworkStatusPage() {
         <h2 className="text-lg font-semibold mb-2">Active Devices</h2>
         <DataTable
           columns={deviceColumns}
-          data={activeDevices.map((ip) => ({ ip, status: "active" }))}
+          data={activeDevices.map((device) => ({
+            ip: device.ip,
+            hostname: device.hostname || 'Unknown',
+            deviceName: device.deviceName || device.hostname || 'Unknown Device',
+            brand: device.brand || 'Unknown',
+            model: device.model || 'Unknown',
+            macAddress: device.macAddress || 'N/A',
+            lastSeen: device.lastSeen ? new Date(device.lastSeen * 1000).toLocaleString() : 'N/A',
+            status: "active"
+          }))}
         />
       </div>
     </div>
