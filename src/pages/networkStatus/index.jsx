@@ -263,15 +263,14 @@ export default function NetworkStatusPage() {
     if (!uid) return;
 
     socket.on("new_network_status", (data) => {
+      const networkStatus = data.payload?.networkStatus?.networkStatus || data.payload?.networkStatus || null;
       const normalized = {
-        payload: {
-          networkStatus: data.payload,
-        },
+        payload: { networkStatus },
         timestamp: data.timestamp || new Date().toISOString(),
       };
-
       dispatch(appendLiveNetworkStatus(normalized));
     });
+
 
     return () => socket.off("new_network_status");
   }, [uid, dispatch]);
