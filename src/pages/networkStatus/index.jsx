@@ -283,6 +283,7 @@ export default function NetworkStatusPage() {
   }, [uid]);
 
   const networkStatus = latestData?.payload?.networkStatus || {};
+  console.log("Network Status:", networkStatus);
   const activeDevices = networkStatus.activeDevices || [];
   const timestamp = latestData?.timestamp;
 
@@ -298,7 +299,7 @@ export default function NetworkStatusPage() {
           Last updated: {timestamp ? format(new Date(timestamp), "PPpp") : "N/A"}
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>Bandwidth</CardTitle>
@@ -342,8 +343,48 @@ export default function NetworkStatusPage() {
             </p>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Packet Count</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold">
+              {networkStatus.packetCount ?? "N/A"}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Packet Loss</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold">
+              {networkStatus.packetLossPercent?.toFixed(1) ?? "N/A"} %
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Out of Order Count</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold">
+              {networkStatus.outOfOrderCount ?? "N/A"} %
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Average RTT time</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold">
+              {networkStatus.averageRttMs?.toFixed(1) ?? "N/A"} ms
+            </p>
+          </CardContent>
+        </Card>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-fr">
+      <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-4 auto-rows-fr">
         <MetricChart
           title="Bandwidth (Kbps)"
           dataKey="bandwidthKbps"
@@ -367,6 +408,34 @@ export default function NetworkStatusPage() {
           dataKey="packetLossPercent"
           color="#ef4444"
           history={metrics}
+        />
+        <MetricChart
+          title="Packet Count"
+          dataKey="packetCount"
+          color="#8b5cf6"
+          history={metrics}
+          description="Total packets sent/received"
+        />
+        <MetricChart
+          title="Active Devices"
+          dataKey="deviceCount"
+          color="#f97316"
+          history={metrics}
+          description="Number of devices connected to the network"
+        />
+        <MetricChart
+          title="Out of Order Packets"
+          dataKey="outOfOrderCount"
+          color="#eab308"
+          history={metrics}
+          description="Percentage of packets received out of order"
+        />
+        <MetricChart
+          title="Average RTT Time"
+          dataKey="averageRttMs"
+          color="#14b8a6"
+          history={metrics}
+          description="Average round-trip time for packets"
         />
       </div>
       <Card className=" p-4 rounded-xl shadow">
