@@ -369,7 +369,7 @@ export default function NetworkStatusPage() {
           history={metrics}
         />
       </div>
-      <div className="bg-white dark:bg-black p-4 rounded-xl shadow">
+      <Card className=" p-4 rounded-xl shadow">
         <h2 className="text-lg font-semibold mb-2">Active Devices</h2>
         <DataTable
           columns={deviceColumns}
@@ -384,7 +384,7 @@ export default function NetworkStatusPage() {
             status: "active"
           }))}
         />
-      </div>
+      </Card>
     </div>
   );
 }
