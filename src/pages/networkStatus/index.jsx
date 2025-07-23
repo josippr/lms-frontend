@@ -29,21 +29,81 @@ import {
   CartesianGrid,
 } from "recharts";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { format } from "date-fns";
 import { fetchNetworkStatus } from "@/service/apiService.js";
 import { DataTable } from "@/components/ui/data-table";
 import { deviceColumns } from "@/components/activeDevicesTable.jsx";
+import {
+  setNetworkStatusData,
+  setNetworkStatusMetrics,
+  setNetworkStatusLoading,
+  setNetworkStatusError,
+  setActiveDevices,
+  appendLiveNetworkStatus,
+} from "@/redux/actions/networkStatus";
+import socket from "@/lib/socket";
 
 
-function MetricChart({ title, dataKey, color, history, description }) {
+function MetricChart({ title, dataKey, color, history, liveData, description }) {
   const [range, setRange] = useState("6h");
   
   let chartData = [];
+  
+  // Combine historical and live data
   if (Array.isArray(history)) {
     chartData = history;
   } else if (history && typeof history === 'object') {
     chartData = history[range] || [];
+  }
+
+  // Add live data points to the chart for real-time updates
+  if (liveData && liveData.length > 0) {
+    const liveChartData = liveData
+      .map(item => ({
+        ...item.payload?.networkStatus,
+        timestamp: item.timestamp || item.createdAt
+      }))
+      .filter(item => item && item[dataKey] !== undefined && item[dataKey] !== null);
+
+    // Filter live data based on the selected range
+    const now = new Date();
+    let cutoffTime;
+    switch (range) {
+      case "1h":
+        cutoffTime = new Date(now.getTime() - 60 * 60 * 1000);
+        break;
+      case "6h":
+        cutoffTime = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+        break;
+      case "12h":
+        cutoffTime = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+        break;
+      case "24h":
+        cutoffTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        break;
+      default:
+        cutoffTime = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+    }
+
+    const filteredLiveData = liveChartData.filter(item => 
+      new Date(item.timestamp) >= cutoffTime
+    );
+
+    // Combine and deduplicate data (prefer live data over historical for same timestamps)
+    const combinedData = [...chartData];
+    filteredLiveData.forEach(liveItem => {
+      const existingIndex = combinedData.findIndex(
+        item => Math.abs(new Date(item.timestamp) - new Date(liveItem.timestamp)) < 60000 // Within 1 minute
+      );
+      if (existingIndex >= 0) {
+        combinedData[existingIndex] = liveItem; // Replace with live data
+      } else {
+        combinedData.push(liveItem); // Add new live data
+      }
+    });
+
+    chartData = combinedData;
   }
 
   const formattedData = chartData.map(item => ({
@@ -189,15 +249,41 @@ function MetricChart({ title, dataKey, color, history, description }) {
 }
 
 export default function NetworkStatusPage() {
-  const [latestData, setLatestData] = useState(null);
-  const [metrics, setMetrics] = useState();
-  const [isLoading, setIsLoading] = useState(true);
-
+  const dispatch = useDispatch();
+  
+  // Get data from Redux store
+  const {
+    latestData,
+    liveData,
+    metrics,
+    activeDevices,
+    isLoading,
+    error,
+    lastUpdated,
+  } = useSelector((state) => state.networkStatus);
+  
   const uid = useSelector((state) => state.profile.linkedNodes[0]);
 
+  // WebSocket listener for real-time network status updates
   useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
+    if (!uid) return;
+
+    socket.on("new_network_status", (networkStatusData) => {
+      const normalized = {
+        ...networkStatusData,
+        timestamp: new Date(networkStatusData.timestamp).toISOString(),
+      };
+
+      dispatch(appendLiveNetworkStatus(normalized));
+    });
+
+    return () => socket.off("new_network_status");
+  }, [uid, dispatch]);
+
+  // Fetch historical network status data on component mount
+  useEffect(() => {
+    const loadHistoricalData = async () => {
+      dispatch(setNetworkStatusLoading(true));
       try {
         const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
         if (!token || !uid) return;
@@ -220,11 +306,19 @@ export default function NetworkStatusPage() {
           return null;
         };
 
-        const latest = findLatestData(result);
-        if (latest) {
-          setLatestData(latest);
+        // Only set initial data if we don't have any live data yet
+        if (liveData.length === 0) {
+          const latest = findLatestData(result);
+          if (latest) {
+            dispatch(setNetworkStatusData(latest));
+            
+            // Extract and set active devices
+            const devices = latest?.payload?.networkStatus?.activeDevices || [];
+            dispatch(setActiveDevices(devices));
+          }
         }
 
+        // Process historical metrics data
         const normalized = { "1h": [], "6h": [], "12h": [], "24h": [] };
 
         if (Array.isArray(result)) {
@@ -271,24 +365,28 @@ export default function NetworkStatusPage() {
           }
         }
 
-        setMetrics(normalized);
+        dispatch(setNetworkStatusMetrics(normalized));
       } catch (error) {
         console.error("Failed to fetch network status:", error);
+        dispatch(setNetworkStatusError(error.message || "Failed to fetch network status"));
       } finally {
-        setIsLoading(false);
+        dispatch(setNetworkStatusLoading(false));
       }
     };
 
-    loadData();
-  }, [uid]);
+    loadHistoricalData();
+  }, [uid, dispatch]); // Removed liveData dependency to avoid unnecessary refetches
 
   const networkStatus = latestData?.payload?.networkStatus || {};
   console.log("Network Status:", networkStatus);
-  const activeDevices = networkStatus.activeDevices || [];
   const timestamp = latestData?.timestamp;
 
   if (isLoading) {
     return <div className="p-4">Loading network status...</div>;
+  }
+
+  if (error) {
+    return <div className="p-4 text-red-500">Error: {error}</div>;
   }
 
   return (
@@ -296,7 +394,7 @@ export default function NetworkStatusPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Network Status</h1>
         <p className="text-sm text-muted-foreground">
-          Last updated: {timestamp ? format(new Date(timestamp), "PPpp") : "N/A"}
+          Last updated: {lastUpdated ? format(new Date(lastUpdated), "PPpp") : (timestamp ? format(new Date(timestamp), "PPpp") : "N/A")}
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-4">
@@ -390,30 +488,35 @@ export default function NetworkStatusPage() {
           dataKey="bandwidthKbps"
           color="#22c55e"
           history={metrics}
+          liveData={liveData}
         />
         <MetricChart
           title="Latency (ms)"
           dataKey="pingLatencyMs"
           color="#3b82f6"
           history={metrics}
+          liveData={liveData}
         />
         <MetricChart
           title="Jitter (ms)"
           dataKey="jitterMs"
           color="#facc15"
           history={metrics}
+          liveData={liveData}
         />
         <MetricChart
           title="Packet Loss (%)"
           dataKey="packetLossPercent"
           color="#ef4444"
           history={metrics}
+          liveData={liveData}
         />
         <MetricChart
           title="Packet Count"
           dataKey="packetCount"
           color="#8b5cf6"
           history={metrics}
+          liveData={liveData}
           description="Total packets sent/received"
         />
         <MetricChart
@@ -421,6 +524,7 @@ export default function NetworkStatusPage() {
           dataKey="deviceCount"
           color="#f97316"
           history={metrics}
+          liveData={liveData}
           description="Number of devices connected to the network"
         />
         <MetricChart
@@ -428,6 +532,7 @@ export default function NetworkStatusPage() {
           dataKey="outOfOrderCount"
           color="#eab308"
           history={metrics}
+          liveData={liveData}
           description="Percentage of packets received out of order"
         />
         <MetricChart
@@ -435,6 +540,7 @@ export default function NetworkStatusPage() {
           dataKey="averageRttMs"
           color="#14b8a6"
           history={metrics}
+          liveData={liveData}
           description="Average round-trip time for packets"
         />
       </div>
