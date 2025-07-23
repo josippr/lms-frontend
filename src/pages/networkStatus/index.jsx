@@ -14,12 +14,12 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   ResponsiveContainer,
   LineChart,
@@ -81,20 +81,17 @@ function MetricChart({ title, dataKey, color, history, description }) {
               <CardDescription className="text-sm">{description}</CardDescription>
             )}
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8">
-                {range}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {["1h", "6h", "12h", "24h"].map((r) => (
-                <DropdownMenuItem key={r} onClick={() => setRange(r)}>
-                  {r}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Select value={range} onValueChange={setRange}>
+            <SelectTrigger className="w-auto h-8">
+              <SelectValue placeholder="Last 6 hours" />
+            </SelectTrigger>
+            <SelectContent align="end">
+              <SelectItem value="1h">Last hour</SelectItem>
+              <SelectItem value="6h">Last 6 hours</SelectItem>
+              <SelectItem value="12h">Last 12 hours</SelectItem>
+              <SelectItem value="24h">Last 24 hours</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </CardHeader>
       <CardContent className="flex-1 min-h-[300px] p-0">
