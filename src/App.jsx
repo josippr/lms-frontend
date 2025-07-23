@@ -57,26 +57,22 @@ function App() {
             path="*"
             element={
               <div className="flex h-auto w-auto overflow-x-hidden overflow-y-auto">
-                <div className="w-full shrink-0 border-r border-gray-200 bg-white">
+                <div className="flex h-screen w-screen overflow-hidden">
                   <SidebarProvider>
                     <AppSidebar />
-                    <SidebarInset>
-                      <div className="flex flex-col h-full shrink-0 justify-start items-start gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-full w-full">
-                        <div className="flex items-center gap-2 px-4 h-10">
-                          <SidebarTrigger className="-ml-1" />
-                          <Separator
-                            orientation="vertical"
-                            className="mr-2 data-[orientation=vertical]:h-4"
-                          />
-                        </div>
-                        <div className="w-full h-full">
-                          <Routes>
-                            <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
-                            <Route path="/metrics" element={<PrivateRoute element={<Metrics key="metrics" />} />} />
-                            <Route path="/network-status" element={<PrivateRoute element={<NetworkStatus key="network-status" />} />} />
-                            <Route path="*" element={<PrivateRoute element={<NotFoundPage key="404" />} />} />
-                          </Routes>
-                        </div>
+                    <SidebarInset className="flex flex-col flex-1 min-w-0 overflow-hidden">
+                      <div className="flex items-center gap-2 px-4 h-12 shrink-0">
+                        <SidebarTrigger className="-ml-1" />
+                        <Separator orientation="vertical" className="mr-2 h-6" />
+                        <Header />
+                      </div>
+                      <div className="flex-1 overflow-auto w-full">
+                        <Routes>
+                          <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
+                          <Route path="/metrics" element={<PrivateRoute element={<Metrics key="metrics" />} />} />
+                          <Route path="/network-status" element={<PrivateRoute element={<NetworkStatus key="network-status" />} />} />
+                          <Route path="*" element={<PrivateRoute element={<NotFoundPage key="404" />} />} />
+                        </Routes>
                       </div>
                     </SidebarInset>
                   </SidebarProvider>
