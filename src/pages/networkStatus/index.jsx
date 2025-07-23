@@ -50,14 +50,12 @@ function MetricChart({ title, dataKey, color, history, liveData, description }) 
   
   let chartData = [];
   
-  // Combine historical and live data
   if (Array.isArray(history)) {
     chartData = history;
   } else if (history && typeof history === 'object') {
     chartData = history[range] || [];
   }
 
-  // Add live data points to the chart for real-time updates
   if (liveData && liveData.length > 0) {
     const liveChartData = liveData
       .map(item => ({
@@ -66,7 +64,6 @@ function MetricChart({ title, dataKey, color, history, liveData, description }) 
       }))
       .filter(item => item && item[dataKey] !== undefined && item[dataKey] !== null);
 
-    // Filter live data based on the selected range
     const now = new Date();
     let cutoffTime;
     switch (range) {
@@ -90,16 +87,15 @@ function MetricChart({ title, dataKey, color, history, liveData, description }) 
       new Date(item.timestamp) >= cutoffTime
     );
 
-    // Combine and deduplicate data (prefer live data over historical for same timestamps)
     const combinedData = [...chartData];
     filteredLiveData.forEach(liveItem => {
       const existingIndex = combinedData.findIndex(
-        item => Math.abs(new Date(item.timestamp) - new Date(liveItem.timestamp)) < 60000 // Within 1 minute
+        item => Math.abs(new Date(item.timestamp) - new Date(liveItem.timestamp)) < 60000
       );
       if (existingIndex >= 0) {
-        combinedData[existingIndex] = liveItem; // Replace with live data
+        combinedData[existingIndex] = liveItem;
       } else {
-        combinedData.push(liveItem); // Add new live data
+        combinedData.push(liveItem);
       }
     });
 
@@ -251,7 +247,6 @@ function MetricChart({ title, dataKey, color, history, liveData, description }) 
 export default function NetworkStatusPage() {
   const dispatch = useDispatch();
   
-  // Get data from Redux store
   const {
     latestData,
     liveData,
@@ -264,14 +259,15 @@ export default function NetworkStatusPage() {
   
   const uid = useSelector((state) => state.profile.linkedNodes[0]);
 
-  // WebSocket listener for real-time network status updates
   useEffect(() => {
     if (!uid) return;
 
-    socket.on("new_network_status", (networkStatusData) => {
+    socket.on("new_network_status", (data) => {
       const normalized = {
-        ...networkStatusData,
-        timestamp: new Date(networkStatusData.timestamp).toISOString(),
+        payload: {
+          networkStatus: data.payload,
+        },
+        timestamp: data.timestamp || new Date().toISOString(),
       };
 
       dispatch(appendLiveNetworkStatus(normalized));
@@ -280,7 +276,6 @@ export default function NetworkStatusPage() {
     return () => socket.off("new_network_status");
   }, [uid, dispatch]);
 
-  // Fetch historical network status data on component mount
   useEffect(() => {
     const loadHistoricalData = async () => {
       dispatch(setNetworkStatusLoading(true));
@@ -306,19 +301,16 @@ export default function NetworkStatusPage() {
           return null;
         };
 
-        // Only set initial data if we don't have any live data yet
         if (liveData.length === 0) {
           const latest = findLatestData(result);
           if (latest) {
             dispatch(setNetworkStatusData(latest));
             
-            // Extract and set active devices
             const devices = latest?.payload?.networkStatus?.activeDevices || [];
             dispatch(setActiveDevices(devices));
           }
         }
 
-        // Process historical metrics data
         const normalized = { "1h": [], "6h": [], "12h": [], "24h": [] };
 
         if (Array.isArray(result)) {
@@ -375,10 +367,9 @@ export default function NetworkStatusPage() {
     };
 
     loadHistoricalData();
-  }, [uid, dispatch]); // Removed liveData dependency to avoid unnecessary refetches
+  }, [uid, dispatch]);
 
   const networkStatus = latestData?.payload?.networkStatus || {};
-  console.log("Network Status:", networkStatus);
   const timestamp = latestData?.timestamp;
 
   if (isLoading) {
