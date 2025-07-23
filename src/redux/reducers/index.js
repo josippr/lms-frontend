@@ -5,6 +5,7 @@ import config from "./config";
 import profile from "./profile";
 import charts from "./charts";
 import metrics from "./metrics";
+import networkStatus from "./networkStatus";
 
 const rootReducer = combineReducers({
   general: general,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   profile: profile,
   charts: charts,
   metrics: metrics,
+  networkStatus: networkStatus,
 });
 
 export default rootReducer;
