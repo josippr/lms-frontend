@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { loginUser, fetchProfile } from "../../service/apiService";
 import { setIsLoggedIn } from "../../redux/actions/general";
 import { setProfile, setProfileLoaded } from "../../redux/actions/profile";
+import { setTheme } from "@/redux/actions/config";
 
 function Login({ className, ...props }) {
   const [username, setUsername] = useState("");
@@ -54,6 +55,7 @@ function Login({ className, ...props }) {
           linkedNodes: profileResponse.linkedNodes || [],
         })
       );
+      dispatch(setTheme(profileResponse.darkMode ? "dark" : "light"));
       dispatch(setProfileLoaded(true));
       navigate("/");
     } catch (err) {
