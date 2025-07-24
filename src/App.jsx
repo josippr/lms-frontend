@@ -11,6 +11,7 @@ import PrivateRoute from "./components/privateRoute";
 import Home from "./pages/home";
 import Login from "./pages/login";
 import Metrics from "./pages/metrics";
+import Profile from "./pages/profile";
 import NetworkStatus from "./pages/networkStatus";
 import { NotFoundPage } from './pages/404/index.jsx';
 
@@ -71,6 +72,7 @@ function App() {
                           <Route path="/" element={<PrivateRoute element={<Home key="home" />} />} />
                           <Route path="/metrics" element={<PrivateRoute element={<Metrics key="metrics" />} />} />
                           <Route path="/network-status" element={<PrivateRoute element={<NetworkStatus key="network-status" />} />} />
+                          <Route path="/profile" element={<PrivateRoute element={<Profile key="profile" />} />} />
                           <Route path="*" element={<PrivateRoute element={<NotFoundPage key="404" />} />} />
                         </Routes>
                       </div>
