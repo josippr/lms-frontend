@@ -6,7 +6,8 @@ import {
   ChevronRight,
   LayoutDashboard,
   CircleGauge,
-  Network
+  Network,
+  TvMinimal
 } from "lucide-react";
 
 import {
@@ -31,6 +32,7 @@ const iconMap = {
   LayoutDashboard,
   CircleGauge,
   Network,
+  TvMinimal,
 };
 
 export function NavMain() {

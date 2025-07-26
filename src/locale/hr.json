@@ -12,7 +12,8 @@
       "route.metrics": "Metrike",
       "route.notifications": "Obavijesti",
       "route.logout": "Odjava",
-      "route.networkStatus": "Status mreže"
+      "route.networkStatus": "Status mreže",
+      "route.devices": "Uređaji"
     }
   },
   "home": {

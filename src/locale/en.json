@@ -12,7 +12,8 @@
       "route.metrics": "Metrics",
       "route.notifications": "Notifications",
       "route.logout": "Logout",
-      "route.networkStatus": "Network status"
+      "route.networkStatus": "Network status",
+      "route.devices": "Devices"
     }
   },
   "home": {
