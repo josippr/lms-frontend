@@ -139,3 +139,22 @@ export const fetchNetworkStatus = async (uid, token) => {
     throw error;
   }
 };
+
+export const fetchDevices = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/api/devices`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch devices. Please try again.'); 
+    }
+    return await response.json(); 
+  } catch (error) {
+    console.error('Error in fetchDevices:', error);
+    throw error;
+  }
+};
