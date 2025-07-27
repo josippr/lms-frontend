@@ -10,9 +10,11 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel, flexRender } from '@tanstack/react-table';
 import { ArrowUp, ArrowDown, Settings } from 'lucide-react';
 import { fetchDevices, updateDeviceTrust } from '@/service/apiService';
@@ -150,6 +152,7 @@ export default function DevicesPage() {
 
   return (
     <div className="p-4 space-y-4">
+      <Toaster />
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold">Network Devices</h2>
         <Input
@@ -197,11 +200,14 @@ export default function DevicesPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Update Trust Level</DialogTitle>
+            <DialogTitle>{selectedDevice?.hostname || 'Device'} settings</DialogTitle>
+            <p className="text-sm text-muted-foreground"> Change trust level for {selectedDevice?.hostname || 'device'}</p>
           </DialogHeader>
 
           <Select value={selectedTrust} onValueChange={setSelectedTrust}>
-            <SelectTrigger className="w-full" />
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select trust level" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="trusted">Trusted</SelectItem>
               <SelectItem value="neutral">Neutral</SelectItem>
@@ -215,22 +221,24 @@ export default function DevicesPage() {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>Are you sure?</AlertDialogHeader>
-              <p>This will change trust level of <strong>{selectedDevice?.deviceName || 'device'}</strong> to <strong>{selectedTrust}</strong>.</p>
+              <AlertDialogDescription>This will change trust level of <strong>{selectedDevice?.hostname || 'device'}</strong> to <strong>{selectedTrust}</strong>.</AlertDialogDescription>
               <AlertDialogFooter>
-                <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                <Button onClick={async () => {
-                      try {
-                        const token = localStorage.getItem('token');
-                        await updateDeviceTrust(token, selectedDevice.mac, selectedTrust);
-                        setDialogOpen(false);
-                       // Optionally re-fetch devices instead of reload
-                        const response = await fetchDevices(token);
-                        setDevices(response.devices || []);
-                      } catch (err) {
-                        console.error(err);
-                        alert("Update failed");
-                      }
-                }}>Confirm</Button>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={async () => {
+                  try {
+                    const token = localStorage.getItem('token');
+                    await updateDeviceTrust(token, selectedDevice.mac, selectedTrust);
+                    setDialogOpen(false);
+                    const response = await fetchDevices(token);
+                    setDevices(response.devices || []);
+                    toast.success(`Trust level updated to "${selectedTrust}" for ${selectedDevice.hostname || 'device'}`, {
+                      style: { backgroundColor: "#16a34a", color: "white" },
+                    });
+                  } catch (err) {
+                    console.error(err);
+                    toast.error('Failed to update trust level');
+                  }
+                }}>Continue</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
