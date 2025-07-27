@@ -53,8 +53,32 @@ export default function DevicesPage() {
     },
     {
       accessorKey: 'trusted',
-      header: 'Trusted',
-      cell: info => info.getValue()
+      header: 'Trust',
+      cell: info => {
+        const trustStatus = info.getValue();
+        let color = 'default';
+        let label = '';
+
+        switch (trustStatus) {
+          case 'trusted':
+            color = 'success';
+            label = 'Trusted';
+            break;
+          case 'neutral':
+            color = 'warning';
+            label = 'Neutral';
+            break;
+          case 'untrusted':
+            color = 'destructive';
+            label = 'Untrusted';
+            break;
+          default:
+            color = 'secondary';
+            label = 'Unknown';
+        }
+
+        return <Badge variant={color}>{label}</Badge>;
+      }
     },
     {
       accessorKey: 'lastScan.type',
