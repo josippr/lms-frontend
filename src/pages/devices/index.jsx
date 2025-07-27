@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -10,13 +9,20 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter } from "@/components/ui/alert-dialog";
 import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel, flexRender } from '@tanstack/react-table';
-import { ArrowUp, ArrowDown } from 'lucide-react';
-import { fetchDevices } from '@/service/apiService';
+import { ArrowUp, ArrowDown, Settings } from 'lucide-react';
+import { fetchDevices, updateDeviceTrust } from '@/service/apiService';
 
 export default function DevicesPage() {
   const [devices, setDevices] = useState([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [selectedDevice, setSelectedDevice] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedTrust, setSelectedTrust] = useState('');
 
   useEffect(() => {
     const loadDevices = async () => {
@@ -34,6 +40,12 @@ export default function DevicesPage() {
     };
     loadDevices();
   }, []);
+
+  useEffect(() => {
+    if (selectedDevice) {
+      console.log('Selected device:', selectedDevice);
+    }
+  }, [selectedDevice]);
 
   const columns = [
     {
@@ -101,8 +113,24 @@ export default function DevicesPage() {
       accessorKey: 'lastSeen',
       header: 'Last Seen',
       cell: info => new Date(info.getValue()).toLocaleString()
-    }
-  ];
+    },
+    {
+  id: 'actions',
+  header: '',
+  cell: ({ row }) => {
+    const device = row.original;
+
+    return (
+      <Button variant="ghost" size="icon" onClick={() => {
+        setSelectedDevice(device);
+        setSelectedTrust(device.trusted);
+        setDialogOpen(true);
+      }}>
+        <Settings className="h-4 w-4" />
+      </Button>
+    );
+  }
+}];
 
   const table = useReactTable({
     data: devices,
@@ -166,6 +194,48 @@ export default function DevicesPage() {
           <div className="text-center py-6 text-muted-foreground">No matching devices found.</div>
         )}
       </div>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Trust Level</DialogTitle>
+          </DialogHeader>
+
+          <Select value={selectedTrust} onValueChange={setSelectedTrust}>
+            <SelectTrigger className="w-full" />
+            <SelectContent>
+              <SelectItem value="trusted">Trusted</SelectItem>
+              <SelectItem value="neutral">Neutral</SelectItem>
+              <SelectItem value="untrusted">Untrusted</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="mt-4" disabled={!selectedDevice}>Confirm</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>Are you sure?</AlertDialogHeader>
+              <p>This will change trust level of <strong>{selectedDevice?.deviceName || 'device'}</strong> to <strong>{selectedTrust}</strong>.</p>
+              <AlertDialogFooter>
+                <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+                <Button onClick={async () => {
+                      try {
+                        const token = localStorage.getItem('token');
+                        await updateDeviceTrust(token, selectedDevice.mac, selectedTrust);
+                        setDialogOpen(false);
+                       // Optionally re-fetch devices instead of reload
+                        const response = await fetchDevices(token);
+                        setDevices(response.devices || []);
+                      } catch (err) {
+                        console.error(err);
+                        alert("Update failed");
+                      }
+                }}>Confirm</Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

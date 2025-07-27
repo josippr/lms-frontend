@@ -158,3 +158,23 @@ export const fetchDevices = async (token) => {
     throw error;
   }
 };
+
+export const updateDeviceTrust = async (token, mac, trustLevel) => {
+  try {
+    const response = await fetch(`${API_URL}/api/devices/update/${mac}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ trustLevel }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update device trust level. Please try again.');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error in updateDeviceTrust:', error);
+    throw error;
+  }
+};
