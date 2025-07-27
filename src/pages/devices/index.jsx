@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -63,7 +64,14 @@ export default function DevicesPage() {
     {
       accessorKey: 'lastScan.active',
       header: 'Active',
-      cell: info => (info.row.original.lastScan?.active ? 'Yes' : 'No')
+      cell: info => {
+        const active = info.row.original.lastScan?.active;
+        return (
+          <Badge variant={active ? 'success' : 'destructive'}>
+            {active ? 'Active' : 'Inactive'}
+          </Badge>
+        );
+      }
     },
     {
       accessorKey: 'lastSeen',
