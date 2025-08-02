@@ -13,7 +13,8 @@
       "route.notifications": "Notifications",
       "route.logout": "Logout",
       "route.networkStatus": "Network status",
-      "route.devices": "Devices"
+      "route.devices": "Devices",
+      "route.alerts": "Alerts"
     }
   },
   "home": {

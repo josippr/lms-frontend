@@ -7,7 +7,8 @@ import {
   LayoutDashboard,
   CircleGauge,
   Network,
-  TvMinimal
+  TvMinimal,
+  BellRing
 } from "lucide-react";
 
 import {
@@ -33,6 +34,7 @@ const iconMap = {
   CircleGauge,
   Network,
   TvMinimal,
+  BellRing,
 };
 
 export function NavMain() {

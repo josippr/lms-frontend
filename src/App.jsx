@@ -13,7 +13,8 @@ import Login from "./pages/login";
 import Metrics from "./pages/metrics";
 import Profile from "./pages/profile";
 import NetworkStatus from "./pages/networkStatus";
-import DevicesPage from "./pages/devices"; // New page for devices
+import DevicesPage from "./pages/devices";
+import AlertsPage from './pages/alerts/index.jsx';
 import { NotFoundPage } from './pages/404/index.jsx';
 
 import { AppSidebar } from "@/components/app-sidebar"
@@ -75,6 +76,7 @@ function App() {
                           <Route path="/network-status" element={<PrivateRoute element={<NetworkStatus key="network-status" />} />} />
                           <Route path="/devices" element={<PrivateRoute element={<DevicesPage key="devices" />} />} />
                           <Route path="/profile" element={<PrivateRoute element={<Profile key="profile" />} />} />
+                          <Route path="/alerts" element={<PrivateRoute element={<AlertsPage key="alerts" />} />} />
                           <Route path="*" element={<PrivateRoute element={<NotFoundPage key="404" />} />} />
                         </Routes>
                       </div>

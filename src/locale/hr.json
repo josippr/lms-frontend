@@ -13,7 +13,8 @@
       "route.notifications": "Obavijesti",
       "route.logout": "Odjava",
       "route.networkStatus": "Status mreže",
-      "route.devices": "Uređaji"
+      "route.devices": "Uređaji",
+      "route.alerts": "Upozorenja"
     }
   },
   "home": {
