@@ -178,3 +178,24 @@ export const updateDeviceTrust = async (token, mac, trustLevel) => {
     throw error;
   }
 };
+
+export const fetchAlerts = async (token, uid) => {
+  console.log("debug alert uid:", uid);
+  try {
+    const response = await fetch(`${API_URL}/api/alert/unresolved`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'uid': uid,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch alerts. Please try again.');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error in fetchAlerts:', error);
+    throw error;
+  }
+};
