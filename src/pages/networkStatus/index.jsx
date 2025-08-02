@@ -467,7 +467,7 @@ export default function NetworkStatusPage() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold">
-              {networkStatus.averageRttMs?.toFixed(1) ?? "N/A"} ms
+              {networkStatus.avgRttMs ?? "N/A"} ms
             </p>
           </CardContent>
         </Card>
@@ -527,7 +527,7 @@ export default function NetworkStatusPage() {
         />
         <MetricChart
           title="Average RTT Time"
-          dataKey="averageRttMs"
+          dataKey="avgRttMs"
           color="#14b8a6"
           history={metrics}
           liveData={liveData}
