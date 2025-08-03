@@ -1,6 +1,5 @@
 "use client";
-
-import { TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp, MoveRight } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -45,7 +44,7 @@ import {
 import socket from "@/lib/socket";
 
 
-function MetricChart({ title, dataKey, color, history, liveData, description }) {
+function MetricChart({ title, dataKey, color, history, liveData, description, trendDirection = "upIsGood" }) {
   const [range, setRange] = useState("6h");
   
   let chartData = [];
@@ -219,20 +218,45 @@ function MetricChart({ title, dataKey, color, history, liveData, description }) 
           <div className="flex items-center gap-2 font-medium">
             {trend > 0 ? (
               <>
-                <TrendingUp className="h-4 w-4 text-green-500" />
-                <span className="text-green-500">
-                  Trending up by {Math.abs(trend).toFixed(1)}%
-                </span>
+                {trendDirection === 'upIsGood' ? (
+                  <>
+                    <TrendingUp className="h-4 w-4 text-green-500" />
+                    <span className="text-green-500">
+                      Trending up by {Math.abs(trend).toFixed(1)}%
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <TrendingUp className="h-4 w-4 text-red-500" />
+                    <span className="text-red-500">
+                      Trending up by {Math.abs(trend).toFixed(1)}%
+                    </span>
+                  </>
+                )}
               </>
             ) : trend < 0 ? (
               <>
-                <TrendingUp className="h-4 w-4 rotate-180 text-red-500" />
-                <span className="text-red-500">
-                  Trending down by {Math.abs(trend).toFixed(1)}%
-                </span>
+                {trendDirection === 'upIsGood' ? (
+                  <>
+                    <TrendingDown className="h-4 w-4 text-red-500" />
+                    <span className="text-red-500">
+                      Trending down by {Math.abs(trend).toFixed(1)}%
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <TrendingDown className="h-4 w-4 text-green-500" />
+                    <span className="text-green-500">
+                      Trending down by {Math.abs(trend).toFixed(1)}%
+                    </span>
+                  </>
+                )}
               </>
             ) : (
-              <span className="text-muted-foreground">No change</span>
+              <>
+                <MoveRight className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">No change</span>
+              </>
             )}
           </div>
           <div className="text-muted-foreground mt-1">
@@ -486,6 +510,7 @@ export default function NetworkStatusPage() {
           color="#3b82f6"
           history={metrics}
           liveData={liveData}
+          trendDirection="upIsBad"
         />
         <MetricChart
           title="Jitter (ms)"
@@ -493,6 +518,7 @@ export default function NetworkStatusPage() {
           color="#facc15"
           history={metrics}
           liveData={liveData}
+          trendDirection="upIsBad"
         />
         <MetricChart
           title="Packet Loss (%)"
@@ -500,6 +526,7 @@ export default function NetworkStatusPage() {
           color="#ef4444"
           history={metrics}
           liveData={liveData}
+          trendDirection="upIsBad"
         />
         <MetricChart
           title="Packet Count"
@@ -524,6 +551,7 @@ export default function NetworkStatusPage() {
           history={metrics}
           liveData={liveData}
           description="Percentage of packets received out of order"
+          trendDirection="upIsBad"
         />
         <MetricChart
           title="Average RTT Time"
@@ -532,6 +560,7 @@ export default function NetworkStatusPage() {
           history={metrics}
           liveData={liveData}
           description="Average round-trip time for packets"
+          trendDirection="upIsBad"
         />
       </div>
       <Card className=" p-4 rounded-xl shadow">
