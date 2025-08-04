@@ -1,4 +1,4 @@
-import { SET_NODE_STATUS, SET_NETWORK_STATUS } from "../actions/types";
+import { SET_NODE_STATUS, SET_NETWORK_STATUS, SET_NETWORK_USAGE } from "../actions/types";
 
 const initialState = {
   nodeStatus: {
@@ -8,6 +8,7 @@ const initialState = {
     lastSync: "",
   },
   networkStatus: [],
+  networkUsage: [],
 };
 
 const charts = (state = initialState, action) => {
@@ -24,6 +25,11 @@ const charts = (state = initialState, action) => {
       return {
         ...state,
         networkStatus: action.payload,
+      };
+    case SET_NETWORK_USAGE:
+      return {
+        ...state,
+        networkUsage: action.payload,
       };
     default:
       return state;

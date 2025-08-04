@@ -20,6 +20,7 @@ export const SET_PROFILE_LOADED = 'SET_PROFILE_LOADED';
 // charts
 export const SET_NODE_STATUS = 'SET_NODE_STATUS';
 export const SET_NETWORK_STATUS = 'SET_NETWORK_STATUS';
+export const SET_NETWORK_USAGE = 'SET_NETWORK_USAGE';
 
 // metrics page
 export const SET_LIVE_METRICS = 'SET_LIVE_METRICS';
