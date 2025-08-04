@@ -65,7 +65,7 @@ function RadialChartCard({ value, label, color = "var(--chart-2)", subtitle = "L
   const chartConfig = { value: { label } };
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>{label}</CardTitle>
         <CardDescription>{subtitle}</CardDescription>
@@ -186,39 +186,39 @@ function MetricsPage() {
     });
 
   return (
-    <div className={`${theme} text-foreground bg-background w-full min-h-screen p-6 space-y-6`}>
-      <Card className="p-4 dark:bg-muted bg-white shadow-xl rounded-2xl">
-        <CardContent className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold">Live Device Metrics</h3>
+    <div className={`${theme} text-foreground bg-background w-full min-h-screen p-4 md:p-6 space-y-4 md:space-y-6`}>
+      <Card className="p-4 dark:bg-muted bg-white shadow-xl rounded-xl md:rounded-2xl">
+        <CardContent className="space-y-4 md:space-y-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+            <h3 className="text-lg md:text-xl font-semibold">Live Device Metrics</h3>
               {latest?.timestamp && (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs md:text-sm text-muted-foreground">
                   Updated {formatDistanceToNow(new Date(latest.timestamp), { addSuffix: true })}
                 </span>
               )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             <div>
               <Label className="text-muted-foreground text-xs">Hostname</Label>
-              <div className="text-lg font-medium">{latest?.hostname || "..."}</div>
+              <div className="text-sm md:text-lg font-medium">{latest?.hostname || "..."}</div>
             </div>
             <div>
               <Label className="text-muted-foreground text-xs">UID</Label>
-              <div className="text-sm break-all">{latest?.uid || "..."}</div>
+              <div className="text-xs md:text-sm break-all">{latest?.uid || "..."}</div>
             </div>
             <div>
               <Label className="text-muted-foreground text-xs">CPU Temp</Label>
-              <div className="text-sm">{latest?.temperature ?? "--"}°C</div>
+              <div className="text-xs md:text-sm">{latest?.temperature ?? "--"}°C</div>
             </div>
             <div>
               <Label className="text-muted-foreground text-xs">Disk Size</Label>
-              <div className="text-sm">{latest?.disk ?? "--"} MB</div>
+              <div className="text-xs md:text-sm">{latest?.disk ?? "--"} MB</div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <div className="col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
+            <div className="lg:col-span-2">
               <RadialChartCard
                 value={latest?.cpuPercent || 0}
                 label="CPU Usage"
@@ -232,7 +232,7 @@ function MetricsPage() {
                 }
               />
             </div>
-            <div className="col-span-2">
+            <div className="lg:col-span-2">
               <RadialChartCard
                 value={latest?.memoryUsed || 0}
                 label="RAM Usage"
@@ -247,23 +247,23 @@ function MetricsPage() {
               />
             </div>
 
-            <div className="col-span-4">
+            <div className="col-span-1 lg:col-span-4">
               <Card className="pt-0">
-                <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center gap-2 space-y-0 border-b py-4 sm:py-5">
                   <div className="grid flex-1 gap-1">
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
                       <span className="relative flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-green-600"></span>
                       </span>
                       Live System Metrics
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-xs sm:text-sm">
                       Showing system performance metrics over time
                     </CardDescription>
                   </div>
                   <Select value={timeRange} onValueChange={setTimeRange}>
-                    <SelectTrigger className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+                    <SelectTrigger className="w-full sm:w-[160px] rounded-lg sm:ml-auto">
                       <SelectValue placeholder="Last 24 hours" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
@@ -274,7 +274,7 @@ function MetricsPage() {
                   </Select>
                 </CardHeader>
                 <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-                  <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+                  <ChartContainer config={chartConfig} className="aspect-auto h-[200px] sm:h-[250px] w-full">
                     <LineChart data={filteredData}>
                       <CartesianGrid vertical={false} />
                       <XAxis
