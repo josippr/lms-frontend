@@ -127,7 +127,7 @@ function MetricChart({ title, dataKey, color, history, liveData, description, tr
   const hasData = formattedData.length > 0;
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div>
@@ -149,62 +149,60 @@ function MetricChart({ title, dataKey, color, history, liveData, description, tr
           </Select>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 min-h-[300px] p-0">
+      <CardContent className="flex-1 p-0">
         {hasData ? (
-          <div className="h-full w-full p-4">
+          <div className="h-full w-full p-4 ml-[-30px]">
             <ChartContainer config={chartConfig}>
-              <ResponsiveContainer width="100%" height="100%" aspect={1.5}>
-                <LineChart
-                  data={formattedData}
-                  margin={{
-                    left: 12,
-                    right: 12,
-                    top: 12,
-                    bottom: 12,
+              <LineChart
+                data={formattedData}
+                margin={{
+                  left: 12,
+                  right: 12,
+                  top: 12,
+                  bottom: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} stroke="hsl(var(--border))" />
+                <XAxis
+                  dataKey="timestamp"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  minTickGap={32}
+                  stroke="hsl(var(--muted-foreground))"
+                  tickFormatter={(value) => format(new Date(value), "HH:mm")}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  stroke="hsl(var(--muted-foreground))"
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={(value) =>
+                        format(new Date(value), "PPpp")
+                      }
+                      indicator="dot"
+                    />
+                  }
+                />
+                <Line
+                  dataKey={dataKey}
+                  type="monotone"
+                  stroke={color}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{
+                    r: 6,
+                    strokeWidth: 2,
+                    stroke: color,
+                    fill: "hsl(var(--background))",
                   }}
-                >
-                  <CartesianGrid vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis
-                    dataKey="timestamp"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    minTickGap={32}
-                    stroke="hsl(var(--muted-foreground))"
-                    tickFormatter={(value) => format(new Date(value), "HH:mm")}
-                  />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    stroke="hsl(var(--muted-foreground))"
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={
-                      <ChartTooltipContent
-                        labelFormatter={(value) =>
-                          format(new Date(value), "PPpp")
-                        }
-                        indicator="dot"
-                      />
-                    }
-                  />
-                  <Line
-                    dataKey={dataKey}
-                    type="monotone"
-                    stroke={color}
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{
-                      r: 6,
-                      strokeWidth: 2,
-                      stroke: color,
-                      fill: "hsl(var(--background))",
-                    }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+                />
+              </LineChart>
             </ChartContainer>
           </div>
         ) : (
@@ -411,13 +409,13 @@ export default function NetworkStatusPage() {
           Last updated: {lastUpdated ? format(new Date(lastUpdated), "PPpp") : (timestamp ? format(new Date(timestamp), "PPpp") : "N/A")}
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 auto-rows-fr">
         <Card>
           <CardHeader>
             <CardTitle>Bandwidth</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold">
+            <p className="text-2xl sm:text-lg font-semibold">
               {networkStatus.bandwidthKbps?.toFixed(0) ?? "N/A"} Kbps
             </p>
             <p className="text-sm text-muted-foreground">
