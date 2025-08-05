@@ -3,10 +3,11 @@ import { useTranslation } from "react-i18next";
 import NodeStatusChart from '../../components/dashboard/NodesStatus';
 import ChartRadialSimple from '../../components/dashboard/networkStatus/index.jsx';
 import NetworkUsageChart from '@/components/dashboard/networkUsage';
+import ActiveDevicesChart from '@/components/dashboard/activeDevicesWidget';
 import { fetchData } from '@/service/apiService';
 import { useEffect } from 'react';
 
-import { setNodeStatus, setNetworkStatus, setNetworkUsage } from '@/redux/actions/charts';
+import { setNodeStatus, setNetworkStatus, setNetworkUsage, setActiveDevicesWidget } from '@/redux/actions/charts';
 import { useSelector, useDispatch } from 'react-redux';
 
 function Home() {
@@ -34,6 +35,7 @@ function Home() {
       dispatch(setNodeStatus(data.nodeStatusChart));
       dispatch(setNetworkStatus(data.networkStatusChart));
       dispatch(setNetworkUsage(data.networkUsageChart));
+      dispatch(setActiveDevicesWidget(data.activeDevicesChart));
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -59,7 +61,7 @@ function Home() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <DummyCard>{t("dashboard.total_revenue")}</DummyCard>
         <DummyCard>{t("dashboard.new_customers")}</DummyCard>
-        <DummyCard>{t("dashboard.active_accounts")}</DummyCard>
+        <ActiveDevicesChart className="w-full min-w-0 min-h-[200px]" />
         <DummyCard>{t("dashboard.growth_rate")}</DummyCard>
       </div>
     </div>
