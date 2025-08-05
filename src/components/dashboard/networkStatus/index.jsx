@@ -1,7 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { RadialBar, RadialBarChart, PolarAngleAxis } from "recharts"
+import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts"
 import { useSelector } from "react-redux"
 
 import {
@@ -19,7 +18,7 @@ import {
 } from "@/components/ui/chart"
 import { Badge } from "@/components/ui/badge"
 
-export const description = "A radial chart"
+export const description = "A bar chart showing network metrics"
 
 const chartConfig = {
   bandwidth: {
@@ -40,9 +39,7 @@ const chartConfig = {
   },
 }
 
-
-
-export default function ChartRadialSimple() {
+export default function ChartBarSimple() {
   const networkStatus = useSelector((state) => state.charts.networkStatus?.hourlyAverage?.networkParams)
   const current = useSelector((state) => state.charts.networkStatus?.hourlyAverage?.status)
   const invalidFlag = useSelector((state) => state.charts.networkStatus?.hourlyAverage?.invalidFlag)
@@ -57,24 +54,24 @@ export default function ChartRadialSimple() {
 
   const chartData = [
     {
-      key: "jitter",
-      value: Math.min(jitterMs, 1000),
-      fill: "var(--chart-4)",
+      name: "Bandwidth",
+      value: Math.min(bandwidthMbps, 100),
+      fill: "var(--chart-1)",
     },
     {
-      key: "latency",
+      name: "Latency",
       value: Math.min(latencyMs, 1000),
-      fill: "var(--chart-3)",
-    },
-    {
-      key: "packetLoss",
-      value: Math.min(packetLossPercent, 100),
       fill: "var(--chart-2)",
     },
     {
-      key: "bandwidth",
-      value: Math.min(bandwidthMbps, 100),
-      fill: "var(--chart-1)",
+      name: "Packet Loss",
+      value: Math.min(packetLossPercent, 100),
+      fill: "var(--chart-3)",
+    },
+    {
+      name: "Jitter",
+      value: Math.min(jitterMs, 1000),
+      fill: "var(--chart-4)",
     },
   ]
 
@@ -105,44 +102,51 @@ export default function ChartRadialSimple() {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="h-[250px]"
         >
-          <RadialBarChart data={chartData} innerRadius={30} outerRadius={110}>
-            <PolarAngleAxis
+          <BarChart
+            data={chartData}
+            layout="horizontal"
+            margin={{ top: 5, right: 70, left: -40, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
+              dataKey="name"
+              type="category" 
+            />
+            <YAxis 
               type="number"
-              domain={[0, 100]} // This sets 100 as the full circle max
-              dataKey="value"
-              angleAxisId={0}
-              tick={false}
+              domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
             />
             <ChartTooltip
-              cursor={false}
               content={
                 <ChartTooltipContent
                   hideLabel
-                  nameKey="key"
+                  nameKey="name"
                   valueKey="value"
                   indicator="dot"
-                  formatter={(value, name, props) => {
-                    const metric = props.payload?.key
-                    switch (metric) {
-                      case "bandwidth":
-                        return [`Bandwidth: ${value} Mbps`, ]
-                      case "latency":
-                        return [`Latency: ${value} ms`, ]
-                      case "packetLoss":
-                        return [`Packet Loss: ${value} %`, ]
-                      case "jitter":
-                        return [`Jitter: ${value} ms`, ]
+                  formatter={(value, name) => {
+                    switch (name) {
+                      case "Bandwidth":
+                        return [`${value} Mbps`]
+                      case "Latency":
+                      case "Jitter":
+                        return [`${value} ms`]
+                      case "Packet Loss":
+                        return [`${value} %`]
                       default:
-                        return [value, name]
+                        return [value]
                     }
                   }}
                 />
               }
             />
-            <RadialBar dataKey="value" background clockWise />
-          </RadialBarChart>
+            <Bar 
+              dataKey="value" 
+              fill="fill" 
+              radius={[4, 4, 0, 0]} // Rounded top corners only
+            />
+          </BarChart>
         </ChartContainer>
       </CardContent>
       )}
