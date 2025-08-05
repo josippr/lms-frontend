@@ -1,14 +1,10 @@
-import { SET_NODE_STATUS, SET_NETWORK_STATUS, SET_NETWORK_USAGE } from "../actions/types";
+import { SET_NODE_STATUS, SET_NETWORK_STATUS, SET_NETWORK_USAGE, SET_ACTIVE_DEVICES_WIDGET } from "../actions/types";
 
 const initialState = {
-  nodeStatus: {
-    deviceName: "",
-    nodeId: "",
-    type: "",
-    lastSync: "",
-  },
+  nodeStatus: [],
   networkStatus: [],
   networkUsage: [],
+  activeDevicesWidget: [],
 };
 
 const charts = (state = initialState, action) => {
@@ -30,6 +26,11 @@ const charts = (state = initialState, action) => {
       return {
         ...state,
         networkUsage: action.payload,
+      };
+    case SET_ACTIVE_DEVICES_WIDGET:
+      return {
+        ...state,
+        activeDevicesWidget: action.payload,
       };
     default:
       return state;
