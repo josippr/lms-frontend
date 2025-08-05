@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel, flexRender } from '@tanstack/react-table';
 import { ArrowUp, ArrowDown, Settings } from 'lucide-react';
 import { fetchDevices, updateDeviceTrust } from '@/service/apiService';
+import { useSelector } from 'react-redux';
 
 export default function DevicesPage() {
   const [devices, setDevices] = useState([]);
@@ -25,6 +26,8 @@ export default function DevicesPage() {
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedTrust, setSelectedTrust] = useState('');
+  
+  const uid = useSelector((state) => state.profile.linkedNodes[0]);
 
   useEffect(() => {
     const loadDevices = async () => {
@@ -34,7 +37,7 @@ export default function DevicesPage() {
           console.error('No authentication token found.');
           return;
         }
-        const response = await fetchDevices(token);
+        const response = await fetchDevices(uid, token);
         setDevices(response.devices || []);
       } catch (err) {
         console.error('Failed to fetch devices:', err);
