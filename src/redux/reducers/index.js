@@ -6,6 +6,7 @@ import profile from "./profile";
 import charts from "./charts";
 import metrics from "./metrics";
 import networkStatus from "./networkStatus";
+import nodes from "./nodes";
 
 const rootReducer = combineReducers({
   general: general,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   charts: charts,
   metrics: metrics,
   networkStatus: networkStatus,
+  nodes: nodes,
 });
 
 export default rootReducer;

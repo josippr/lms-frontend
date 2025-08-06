@@ -199,3 +199,23 @@ export const fetchAlerts = async (token, uid) => {
     throw error;
   }
 };
+
+export const fetchNodes = async (token, uid) => {
+  try {
+    const response = await fetch(`${API_URL}/api/nodes/${uid}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch nodes for UID: ${uid}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Error in fetchNodes for UID ${uid}:`, error);
+    throw error;
+  }
+};

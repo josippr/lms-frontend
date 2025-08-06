@@ -6,10 +6,11 @@ import NetworkUsageChart from '@/components/dashboard/networkUsage';
 import ActiveDevicesChart from '@/components/dashboard/activeDevicesWidget';
 import SpeedtestWidget from '@/components/dashboard/speedtestWidget';
 
-import { fetchData } from '@/service/apiService';
-import { useEffect } from 'react';
+import { fetchData, fetchNodes, fetchProfile } from '@/service/apiService';
+import { useEffect, useState } from 'react';
 
 import { setNodeStatus, setNetworkStatus, setNetworkUsage, setActiveDevicesWidget, setSpeedTestData } from '@/redux/actions/charts';
+import { setNodeData } from '@/redux/actions/nodes';
 import { useSelector, useDispatch } from 'react-redux';
 
 function Home() {
@@ -20,6 +21,8 @@ function Home() {
   const nodeStatusData = useSelector((state) => state.charts.nodeStatus[0]);
   const networkStatusData = useSelector((state) => state.charts.networkStatus);
   const networkUsageData = useSelector((state) => state.charts.networkUsage);
+
+  const profile = useSelector((state) => state.profile ?? null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -33,6 +36,13 @@ function Home() {
   const fetchDataAndLog = async (token) => {
     try {
       const data = await fetchData(token);
+
+      if(!profile) {
+        fetchProfile(token);
+      }
+      const nodes = await fetchNodes(token, profile?.linkedNodes[0]);
+      dispatch(setNodeData(nodes));
+
       console.log('Fetched data:', data);
       dispatch(setNodeStatus(data.nodeStatusChart));
       dispatch(setNetworkStatus(data.networkStatusChart));
