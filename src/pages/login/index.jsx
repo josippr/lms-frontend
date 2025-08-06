@@ -19,6 +19,8 @@ import { setIsLoggedIn } from "../../redux/actions/general";
 import { setProfile, setProfileLoaded } from "../../redux/actions/profile";
 import { setTheme } from "@/redux/actions/config";
 
+import socket from "@/lib/socket";
+
 function Login({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -57,6 +59,9 @@ function Login({ className, ...props }) {
       );
       dispatch(setTheme(profileResponse.darkMode ? "dark" : "light"));
       dispatch(setProfileLoaded(true));
+
+      socket.emit('join_device_room', profileResponse.linkedNodes[0]);
+
       navigate("/");
     } catch (err) {
       let message = "An unexpected error occurred. Please try again.";
