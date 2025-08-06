@@ -7,7 +7,7 @@ import ActiveDevicesChart from '@/components/dashboard/activeDevicesWidget';
 import { fetchData } from '@/service/apiService';
 import { useEffect } from 'react';
 
-import { setNodeStatus, setNetworkStatus, setNetworkUsage, setActiveDevicesWidget } from '@/redux/actions/charts';
+import { setNodeStatus, setNetworkStatus, setNetworkUsage, setActiveDevicesWidget, setSpeedTestData } from '@/redux/actions/charts';
 import { useSelector, useDispatch } from 'react-redux';
 
 function Home() {
@@ -36,6 +36,7 @@ function Home() {
       dispatch(setNetworkStatus(data.networkStatusChart));
       dispatch(setNetworkUsage(data.networkUsageChart));
       dispatch(setActiveDevicesWidget(data.activeDevicesChart));
+      dispatch(setSpeedTestData(data.speedtestChart));
     } catch (error) {
       console.error('Error fetching data:', error);
     }

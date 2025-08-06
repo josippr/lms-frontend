@@ -1,10 +1,11 @@
-import { SET_NODE_STATUS, SET_NETWORK_STATUS, SET_NETWORK_USAGE, SET_ACTIVE_DEVICES_WIDGET } from "../actions/types";
+import { SET_NODE_STATUS, SET_NETWORK_STATUS, SET_NETWORK_USAGE, SET_ACTIVE_DEVICES_WIDGET, SET_SPEEDTEST_DATA } from "../actions/types";
 
 const initialState = {
   nodeStatus: [],
   networkStatus: [],
   networkUsage: [],
   activeDevicesWidget: [],
+  speedTestData: [],
 };
 
 const charts = (state = initialState, action) => {
@@ -31,6 +32,11 @@ const charts = (state = initialState, action) => {
       return {
         ...state,
         activeDevicesWidget: action.payload,
+      };
+    case SET_SPEEDTEST_DATA:
+      return {
+        ...state,
+        speedTestData: action.payload,
       };
     default:
       return state;
