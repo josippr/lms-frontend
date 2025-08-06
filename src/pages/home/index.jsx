@@ -4,6 +4,8 @@ import NodeStatusChart from '../../components/dashboard/NodesStatus';
 import ChartRadialSimple from '../../components/dashboard/networkStatus/index.jsx';
 import NetworkUsageChart from '@/components/dashboard/networkUsage';
 import ActiveDevicesChart from '@/components/dashboard/activeDevicesWidget';
+import SpeedtestWidget from '@/components/dashboard/speedtestWidget';
+
 import { fetchData } from '@/service/apiService';
 import { useEffect } from 'react';
 
@@ -59,11 +61,12 @@ function Home() {
         </div>
         <NetworkUsageChart className="w-full min-h-[200px] h-full" />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <DummyCard>{t("dashboard.total_revenue")}</DummyCard>
-        <DummyCard>{t("dashboard.new_customers")}</DummyCard>
-        <ActiveDevicesChart className="w-full min-w-0 min-h-[200px]" />
-        <DummyCard>{t("dashboard.growth_rate")}</DummyCard>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <SpeedtestWidget className="w-full min-h-[200px] h-full" />
+        <div className="grid grid-cols-2 gap-6">
+          <ActiveDevicesChart className="w-full min-w-0 min-h-[200px]" />
+          <DummyCard>{t("dashboard.growth_rate")}</DummyCard>
+        </div>
       </div>
     </div>
   );
