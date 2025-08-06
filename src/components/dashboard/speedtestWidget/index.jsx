@@ -122,7 +122,7 @@ function SpeedtestWidget() {
       <CardFooter className="text-sm text-muted-foreground">
         <div className="text-left">
           <div><strong>Server:</strong> {speedTestData.server || 'Unknown'}</div>
-          <div><strong>Ping:</strong> {speedTestData.ping || 'N/A'} ms</div>
+          <div><strong>Ping:</strong> {speedTestData.latency.toFixed(2) || 'N/A'} ms</div>
           <div><strong>Last tested:</strong> {formattedDate}</div>
         </div>
       </CardFooter>
