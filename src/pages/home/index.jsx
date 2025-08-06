@@ -5,6 +5,7 @@ import ChartRadialSimple from '../../components/dashboard/networkStatus/index.js
 import NetworkUsageChart from '@/components/dashboard/networkUsage';
 import ActiveDevicesChart from '@/components/dashboard/activeDevicesWidget';
 import SpeedtestWidget from '@/components/dashboard/speedtestWidget';
+import MapWidget from '@/components/dashboard/mapWidget';
 
 import { fetchData, fetchNodes, fetchProfile } from '@/service/apiService';
 import { useEffect, useState } from 'react';
@@ -12,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { setNodeStatus, setNetworkStatus, setNetworkUsage, setActiveDevicesWidget, setSpeedTestData } from '@/redux/actions/charts';
 import { setNodeData } from '@/redux/actions/nodes';
 import { useSelector, useDispatch } from 'react-redux';
+import { Card } from '@/components/ui/card';
 
 function Home() {
   const { theme } = useTheme();
@@ -23,6 +25,7 @@ function Home() {
   const networkUsageData = useSelector((state) => state.charts.networkUsage);
 
   const profile = useSelector((state) => state.profile ?? null);
+  const latlong = useSelector((state) => state.nodes?.data[0]?.latlong);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -75,7 +78,9 @@ function Home() {
         <SpeedtestWidget className="w-full min-h-[200px] h-full" />
         <div className="grid grid-cols-2 gap-6">
           <ActiveDevicesChart className="w-full min-w-0 min-h-[200px]" />
-          <DummyCard>{t("dashboard.growth_rate")}</DummyCard>
+          <Card className="w-full h-full p-0 overflow-hidden">
+            <MapWidget className="w-full min-w-0 min-h-[200px]" latlong={latlong} />
+          </Card>
         </div>
       </div>
     </div>
