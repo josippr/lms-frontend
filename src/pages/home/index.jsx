@@ -67,16 +67,25 @@ function Home() {
 
   return (
     <div className={`${theme} text-foreground bg-background w-full min-h-screen p-4 sm:p-6 space-y-6 overflow-auto`}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* Small cards container - stays in md layout longer */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
           <NodeStatusChart className="w-full min-w-0 min-h-[200px]" data={nodeStatusData} />
           <ChartRadialSimple className="w-full min-w-0 min-h-[200px]" />
         </div>
-        <NetworkUsageChart className="w-full min-h-[200px] h-full" />
+        
+        {/* Large chart - horizontal scroll on mobile/tablet */}
+        <div className="w-full overflow-x-auto">
+          <NetworkUsageChart className="w-full min-w-[400px] min-h-[200px] h-full xl:min-w-0" />
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* Speedtest widget - full width on mobile/tablet */}
         <SpeedtestWidget className="w-full min-h-[200px] h-full" />
-        <div className="grid grid-cols-2 gap-6">
+        
+        {/* Small cards container - stays in md layout longer */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
           <ActiveDevicesChart className="w-full min-w-0 min-h-[200px]" />
           <Card className="w-full h-full p-0 overflow-hidden">
             <MapWidget className="w-full min-w-0 min-h-[200px]" latlong={latlong} />
