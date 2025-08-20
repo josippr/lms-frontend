@@ -190,7 +190,7 @@ function ResponsiveSidebarContent() {
   )
 }
 
-export function AppSidebarDynamic({ ...props }) {
+export function AppSidebar({ ...props }) {
   const [collapsibleState, setCollapsibleState] = React.useState("icon")
   
   React.useEffect(() => {
