@@ -70,6 +70,10 @@ export default function NodeStatusChart({ data }) {
             endAngle={-270}
             innerRadius={80}
             outerRadius={110}
+            width={250}
+            height={250}
+            cx={125}
+            cy={125}
           >
             <PolarGrid radialLines={false} stroke="none" />
             <PolarRadiusAxis
@@ -113,4 +117,3 @@ export default function NodeStatusChart({ data }) {
     </Card>
   )
 }
-
