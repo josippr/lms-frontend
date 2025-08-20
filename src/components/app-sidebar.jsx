@@ -21,9 +21,9 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
 const data = {
   user: {
     name: "shadcn",
@@ -153,11 +153,29 @@ const data = {
   ],
 }
 
-export function AppSidebar({
-  ...props
-}) {
+function ResponsiveSidebarContent() {
+  const { open, setOpen } = useSidebar()
+  
+  React.useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth
+      
+      if (width >= 1500) {
+        setOpen(true)  // Auto-expand on large screens
+      } else if (width < 1500 && open) {
+        setOpen(false) // Auto-collapse on smaller screens only if currently open
+      }
+    }
+    
+    // Set initial state
+    handleResize()
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [open, setOpen])
+  
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
@@ -168,6 +186,34 @@ export function AppSidebar({
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
+    </>
+  )
+}
+
+export function AppSidebarDynamic({ ...props }) {
+  const [collapsibleState, setCollapsibleState] = React.useState("icon")
+  
+  React.useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth
+      
+      if (width < 768) {
+        setCollapsibleState("offcanvas")
+      } else if (width < 1500) {
+        setCollapsibleState("icon")
+      } else {
+        setCollapsibleState("none")
+      }
+    }
+    
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  return (
+    <Sidebar collapsible={collapsibleState} {...props}>
+      <ResponsiveSidebarContent />
     </Sidebar>
-  );
+  )
 }
