@@ -76,7 +76,7 @@ export default function ChartBarSimple() {
   ]
 
   return (
-    <Card className="flex flex-col w-full sm:w-auto">
+    <Card className="flex flex-col w-full max-w-full min-w-0">
       <CardHeader className="items-center pb-0">
         <CardTitle>Current Network Status</CardTitle>
         {current && (
@@ -99,54 +99,56 @@ export default function ChartBarSimple() {
       {invalidFlag ? (
         <h1>There is no valid data for the last hour.</h1>
       ) : (
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-0 min-w-0">
         <ChartContainer
           config={chartConfig}
-          className="h-[250px]"
+          className="h-[250px] w-full min-w-0"
         >
-          <BarChart
-            data={chartData}
-            layout="horizontal"
-            margin={{ top: 5, right: 70, left: -40, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="name"
-              type="category" 
-            />
-            <YAxis 
-              type="number"
-              domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  hideLabel
-                  nameKey="name"
-                  valueKey="value"
-                  indicator="dot"
-                  formatter={(value, name) => {
-                    switch (name) {
-                      case "Bandwidth":
-                        return [`${value} Mbps`]
-                      case "Latency":
-                      case "Jitter":
-                        return [`${value} ms`]
-                      case "Packet Loss":
-                        return [`${value} %`]
-                      default:
-                        return [value]
-                    }
-                  }}
-                />
-              }
-            />
-            <Bar 
-              dataKey="value" 
-              fill="fill" 
-              radius={[4, 4, 0, 0]} // Rounded top corners only
-            />
-          </BarChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              layout="horizontal"
+              margin={{ top: 5, right: 10, left: -40, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="name"
+                type="category" 
+              />
+              <YAxis 
+                type="number"
+                domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    nameKey="name"
+                    valueKey="value"
+                    indicator="dot"
+                    formatter={(value, name) => {
+                      switch (name) {
+                        case "Bandwidth":
+                          return [`${value} Mbps`]
+                        case "Latency":
+                        case "Jitter":
+                          return [`${value} ms`]
+                        case "Packet Loss":
+                          return [`${value} %`]
+                        default:
+                          return [value]
+                      }
+                    }}
+                  />
+                }
+              />
+              <Bar 
+                dataKey="value" 
+                fill="fill" 
+                radius={[4, 4, 0, 0]} // Rounded top corners only
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
       )}
