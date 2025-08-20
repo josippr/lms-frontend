@@ -137,7 +137,7 @@ const Profile = () => {
           </div>
 
           <div className="flex items-center justify-between">
-            <Label htmlFor="darkMode">Dark Mode</Label>
+            <Label htmlFor="darkMode">Set default theme to Dark</Label>
             <Switch
               id="darkMode"
               checked={profile.darkMode}
@@ -145,9 +145,9 @@ const Profile = () => {
             />
           </div>
 
-          <Separator />
+          {/* <Separator /> */}
 
-          <div>
+          {/* <div>
             <h3 className="text-sm font-semibold mb-2">Notification Preferences</h3>
             <div className="space-y-2">
               {["email", "sms", "push"].map((method) => (
@@ -160,18 +160,18 @@ const Profile = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
 
           <Separator />
 
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <Label htmlFor="applyImmediately">Apply Changes Immediately</Label>
             <Switch
               id="applyImmediately"
               checked={applyImmediately}
               onCheckedChange={setApplyImmediately}
             />
-          </div>
+          </div> */}
 
           <Button
             onClick={handleSave}

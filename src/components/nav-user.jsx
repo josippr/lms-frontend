@@ -91,7 +91,7 @@ export function NavUser() {
                   {t("generalConfig.routes.route.profile")}
                 </DropdownMenuItem>
               </Link>
-              <Link to="/profile" className="w-full">
+              {/* <Link to="/profile" className="w-full">
                 <DropdownMenuItem>
                   <Settings />
                   {t("generalConfig.routes.route.settings")}
@@ -102,7 +102,7 @@ export function NavUser() {
                   <Bell />
                   {t("generalConfig.routes.route.notifications")}
                 </DropdownMenuItem>
-              </Link>
+              </Link> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
