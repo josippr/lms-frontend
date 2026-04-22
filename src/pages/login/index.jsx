@@ -19,7 +19,7 @@ import { setIsLoggedIn } from "../../redux/actions/general";
 import { setProfile, setProfileLoaded } from "../../redux/actions/profile";
 import { setTheme } from "@/redux/actions/config";
 
-import socket from "@/lib/socket";
+import { connectSocket } from "@/lib/socket";
 
 function Login({ className, ...props }) {
   const [username, setUsername] = useState("");
@@ -60,7 +60,12 @@ function Login({ className, ...props }) {
       dispatch(setTheme(profileResponse.darkMode ? "dark" : "light"));
       dispatch(setProfileLoaded(true));
 
-      socket.emit('join_device_room', profileResponse.linkedNodes[0]);
+      const socket = connectSocket(response.token);
+      if (profileResponse.linkedNodes?.length > 0) {
+        for (const nodeId of profileResponse.linkedNodes) {
+          socket.emit('join_device_room', nodeId);
+        }
+      }
 
       navigate("/");
     } catch (err) {

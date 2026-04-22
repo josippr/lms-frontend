@@ -45,7 +45,7 @@ import {
   setHistoricalMetrics,
   appendLiveMetric,
 } from "@/redux/actions/metrics";
-import socket from "@/lib/socket";
+import { getSocket } from "@/lib/socket";
 
 const MAX_POINTS = 30;
 
@@ -136,17 +136,20 @@ function MetricsPage() {
   const isLive = !!latestLive;
 
   useEffect(() => {
-    socket.on("new_metric", (metric) => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handler = (metric) => {
       const normalized = {
         ...metric,
         timestamp: new Date(metric.timestamp).toISOString(),
       };
-
       dispatch(appendLiveMetric(normalized));
-    });
+    };
 
-    return () => socket.off("new_metric");
-  }, [uid]);
+    socket.on("new_metric", handler);
+    return () => socket.off("new_metric", handler);
+  }, [uid, dispatch]);
 
   // Fetch historical metrics
   useEffect(() => {

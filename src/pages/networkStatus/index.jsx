@@ -41,7 +41,7 @@ import {
   setActiveDevices,
   appendLiveNetworkStatus,
 } from "@/redux/actions/networkStatus";
-import socket from "@/lib/socket";
+import { getSocket } from "@/lib/socket";
 
 
 function MetricChart({ title, dataKey, color, history, liveData, description, trendDirection = "upIsGood" }) {
@@ -284,17 +284,20 @@ export default function NetworkStatusPage() {
   useEffect(() => {
     if (!uid) return;
 
-    socket.on("new_network_status", (data) => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handler = (data) => {
       const networkStatus = data.payload?.networkStatus?.networkStatus || data.payload?.networkStatus || null;
       const normalized = {
         payload: { networkStatus },
         timestamp: data.timestamp || new Date().toISOString(),
       };
       dispatch(appendLiveNetworkStatus(normalized));
-    });
+    };
 
-
-    return () => socket.off("new_network_status");
+    socket.on("new_network_status", handler);
+    return () => socket.off("new_network_status", handler);
   }, [uid, dispatch]);
 
   useEffect(() => {

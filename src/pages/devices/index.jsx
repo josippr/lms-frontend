@@ -232,7 +232,7 @@ export default function DevicesPage() {
                     const token = localStorage.getItem('token');
                     await updateDeviceTrust(token, selectedDevice.mac, selectedTrust);
                     setDialogOpen(false);
-                    const response = await fetchDevices(token);
+                    const response = await fetchDevices(uid, token);
                     setDevices(response.devices || []);
                     toast.success(`Trust level updated to "${selectedTrust}" for ${selectedDevice.hostname || 'device'}`, {
                       style: { backgroundColor: "#16a34a", color: "white" },
